@@ -594,7 +594,9 @@ typedef NS_ENUM(NSInteger, TitleBarButtonPosition) {
             styleMask |= NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
         }
 
-        GSThemeControlState state = isActive ? GSThemeNormalState : GSThemeSelectedState;
+        // Use GSTitleBarKey/GSTitleBarNormal: base GSTheme indexes a 3-entry array with
+        // this value (GSThemeSelectedState=6 reads out of bounds); Eau treats non-zero as inactive.
+        int state = isActive ? GSTitleBarKey : GSTitleBarNormal;
 
         NSDebugLog(@"Drawing GSTheme titlebar with styleMask: 0x%lx, state: %d", (unsigned long)styleMask, (int)state);
 
@@ -1090,7 +1092,9 @@ typedef NS_ENUM(NSInteger, TitleBarButtonPosition) {
             }
         }
 
-        GSThemeControlState state = isActive ? GSThemeNormalState : GSThemeSelectedState;
+        // Use GSTitleBarKey/GSTitleBarNormal: base GSTheme indexes a 3-entry array with
+        // this value (GSThemeSelectedState=6 reads out of bounds); Eau treats non-zero as inactive.
+        int state = isActive ? GSTitleBarKey : GSTitleBarNormal;
 
         NSDebugLog(@"Drawing standalone GSTheme titlebar with styleMask: 0x%lx, state: %d (fixedSize=%d, mini=%d)", (unsigned long)styleMask, (int)state, (int)isFixedSize, clientWindow ? (int)[clientWindow canMinimize] : 0);
 

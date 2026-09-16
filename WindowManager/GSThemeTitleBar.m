@@ -241,7 +241,8 @@
 }
 
 - (GSThemeControlState)themeStateForActive:(BOOL)isActive {
-    return isActive ? GSThemeNormalState : GSThemeSelectedState;
+    // Base GSTheme indexes a 3-entry array with this; GSThemeSelectedState (6) is out of bounds
+    return (GSThemeControlState)(isActive ? GSTitleBarKey : GSTitleBarNormal);
 }
 
 #pragma mark - Button Hit Detection
