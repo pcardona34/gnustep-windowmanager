@@ -88,6 +88,10 @@ typedef NS_ENUM(NSInteger, childrenMask)
 - (void) destroyResizeZones;
 // Redraw the resize bar with the active theme
 - (void) renderResizeBar;
+// Re-apply the active theme's decoration offsets (title bar, border, resize
+// bar) to an existing frame after a theme switch. Returns YES if the
+// geometry changed.
+- (BOOL) relayoutForCurrentTheme;
 // Round the frame's corners (theme corner radii) with a shape mask when no
 // compositor is running; with a compositor the decorations use transparency.
 - (void) applyCornerShape;

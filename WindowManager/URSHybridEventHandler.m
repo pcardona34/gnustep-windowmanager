@@ -1371,8 +1371,6 @@
           [[GSTheme theme] name],
           [URSDecorationMetrics themeProvidesImageNamed:@"common_Zoom"],
           [URSDecorationMetrics themeProvidesImageNamed:@"common_Close"]);
-    // TODO: themes with code can change title/resize bar heights; existing
-    // frames keep the geometry they were created with.
     // Redraw on the next run loop pass so NSColor and friends have processed
     // the same notification and report the new theme's values.
     [self performSelector:@selector(refreshAllManagedWindows) withObject:nil afterDelay:0];
@@ -1393,6 +1391,10 @@
         }
         XCBTitleBar *titlebar = (XCBTitleBar *)titlebarWindow;
         XCBWindow *clientWindow = [frame childWindowForKey:ClientWindow];
+
+        // Title bar / resize bar sizes may differ in the new theme
+        [frame relayoutForCurrentTheme];
+
         BOOL isActive = (focusedId != XCB_NONE && clientWindow != nil &&
                          [clientWindow window] == focusedId);
         uint32_t borderPixel = [URSDecorationMetrics borderPixel];
