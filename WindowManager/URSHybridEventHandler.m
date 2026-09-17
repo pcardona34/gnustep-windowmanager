@@ -1410,6 +1410,7 @@
             [titlebar drawArea:[titlebar windowRect]];
         }
         [frame renderResizeBar];
+        [frame applyCornerShape];
         if (self.compositingManager && [self.compositingManager compositingActive]) {
             [self.compositingManager invalidateWindowPixmap:[frame window]];
         }

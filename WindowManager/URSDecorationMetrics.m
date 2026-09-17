@@ -7,9 +7,11 @@
 #import <GNUstepGUI/GSTheme.h>
 #import <math.h>
 
-// Optional theme hook for zoom placement (not in libs-gui today)
-@interface GSTheme (URSZoomButtonFrame)
+// Optional theme hooks not (yet) in libs-gui
+@interface GSTheme (URSOptionalDecorationMethods)
 - (NSRect)zoomButtonFrameForBounds:(NSRect)bounds;
+- (CGFloat)titlebarCornerRadius;
+- (CGFloat)windowBottomCornerRadius;
 @end
 
 @implementation URSDecorationMetrics
@@ -171,6 +173,26 @@
 
     [[b cell] setHighlighted:highlighted];
     return b;
+}
+
++ (uint16_t)topCornerRadiusForStyleMask:(NSUInteger)styleMask
+{
+    GSTheme *theme = [GSTheme theme];
+    if (![self hasTitleBarForStyleMask:styleMask] ||
+        ![theme respondsToSelector:@selector(titlebarCornerRadius)])
+        return 0;
+    long radius = lround([theme titlebarCornerRadius]);
+    return (uint16_t)MAX(0, MIN(radius, (long)[self titlebarHeight]));
+}
+
++ (uint16_t)bottomCornerRadiusForStyleMask:(NSUInteger)styleMask
+{
+    GSTheme *theme = [GSTheme theme];
+    if (![self hasResizeBarForStyleMask:styleMask] ||
+        ![theme respondsToSelector:@selector(windowBottomCornerRadius)])
+        return 0;
+    long radius = lround([theme windowBottomCornerRadius]);
+    return (uint16_t)MAX(0, MIN(radius, (long)[self resizebarHeight]));
 }
 
 + (NSColor *)borderColor

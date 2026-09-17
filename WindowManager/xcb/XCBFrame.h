@@ -60,6 +60,8 @@ typedef NS_ENUM(NSInteger, childrenMask)
 @property (nonatomic, assign) NSUInteger decorationStyleMask;
 // Client reports unsaved changes (_GNUSTEP_WM_ATTR GSDocumentEditedFlag)
 @property (nonatomic, assign) BOOL documentEdited;
+// A corner-rounding shape mask is currently set on the frame
+@property (nonatomic, assign) BOOL hasCornerShape;
 
 - (id) initWithClientWindow:(XCBWindow*) aClientWindow withConnection:(XCBConnection*) aConnection;
 - (id) initWithClientWindow:(XCBWindow*) aClientWindow
@@ -86,6 +88,9 @@ typedef NS_ENUM(NSInteger, childrenMask)
 - (void) destroyResizeZones;
 // Redraw the resize bar with the active theme
 - (void) renderResizeBar;
+// Round the frame's corners (theme corner radii) with a shape mask when no
+// compositor is running; with a compositor the decorations use transparency.
+- (void) applyCornerShape;
 
 
  /********************************
