@@ -65,6 +65,13 @@
               highlighted:(BOOL)highlighted
            documentEdited:(BOOL)edited;
 
+// Corner radii for decorated windows. Top corners round the title bar; bottom
+// corners round the resize bar, so they are 0 for windows without one.
+// TODO(libs-gui): themes provide these through the informal
+// -titlebarCornerRadius / -windowBottomCornerRadius methods for now.
++ (uint16_t)topCornerRadiusForStyleMask:(NSUInteger)styleMask;
++ (uint16_t)bottomCornerRadiusForStyleMask:(NSUInteger)styleMask;
+
 // Window outline colour (theme "windowBorderColor", black fallback as in GSTheme)
 + (NSColor *)borderColor;
 

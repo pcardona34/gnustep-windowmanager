@@ -10,6 +10,7 @@
 #import "Transformers.h"
 #import "ICCCMService.h"
 #import "URSDecorationMetrics.h"
+#include <xcb/shape.h>
 #import "XCBTypes.h"
 #import <AppKit/NSScroller.h>
 #import <GNUstepGUI/GSTheme.h>
@@ -386,6 +387,7 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         [self createResizeBarWithDepth:depth visual:titlebarVisual colormap:argbColormap];
         [self createResizeZonesFromTheme];
     }
+    [self applyCornerShape];
 
     titleBar = nil;
     clientWindow = nil;
@@ -624,6 +626,71 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     }
 }
 
+#pragma mark - Corner Shape
+
+- (void)applyCornerShape
+{
+    xcb_connection_t *conn = [connection connection];
+    const xcb_query_extension_reply_t *ext = xcb_get_extension_data(conn, &xcb_shape_id);
+    if (!ext || !ext->present)
+        return;
+
+    Class compositorClass = NSClassFromString(@"URSCompositingManager");
+    BOOL compositorActive = [[compositorClass sharedManager] compositingActive];
+
+    int top = [URSDecorationMetrics topCornerRadiusForStyleMask:self.decorationStyleMask];
+    int bottom = [URSDecorationMetrics bottomCornerRadiusForStyleMask:self.decorationStyleMask];
+    XCBRect frameRect = [self windowRect];
+    int w = frameRect.size.width, h = frameRect.size.height;
+
+    if (compositorActive || (top == 0 && bottom == 0) || w <= 2 * MAX(top, bottom) ||
+        h <= top + bottom) {
+        // Rectangular: remove any mask left from a previous theme
+        if (self.hasCornerShape) {
+            xcb_shape_mask(conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, window, 0, 0, XCB_NONE);
+            self.hasCornerShape = NO;
+        }
+        return;
+    }
+
+    xcb_pixmap_t mask = xcb_generate_id(conn);
+    xcb_create_pixmap(conn, 1, mask, window, w, h);
+    xcb_gcontext_t clear = xcb_generate_id(conn);
+    xcb_gcontext_t fill = xcb_generate_id(conn);
+    xcb_create_gc(conn, clear, mask, XCB_GC_FOREGROUND, (uint32_t[]){0});
+    xcb_create_gc(conn, fill, mask, XCB_GC_FOREGROUND, (uint32_t[]){1});
+
+    xcb_rectangle_t all = {0, 0, w, h};
+    xcb_poly_fill_rectangle(conn, mask, clear, 1, &all);
+
+    xcb_rectangle_t body[] = {
+        {0, top, w, h - top - bottom},          // between the corners
+        {top, 0, w - 2 * top, top},             // top edge
+        {bottom, h - bottom, w - 2 * bottom, bottom} // bottom edge
+    };
+    xcb_poly_fill_rectangle(conn, mask, fill, 3, body);
+
+    xcb_arc_t arcs[4];
+    int n = 0;
+    if (top > 0) {
+        arcs[n++] = (xcb_arc_t){0, 0, 2 * top, 2 * top, 0, 360 << 6};
+        arcs[n++] = (xcb_arc_t){w - 2 * top, 0, 2 * top, 2 * top, 0, 360 << 6};
+    }
+    if (bottom > 0) {
+        arcs[n++] = (xcb_arc_t){0, h - 2 * bottom, 2 * bottom, 2 * bottom, 0, 360 << 6};
+        arcs[n++] = (xcb_arc_t){w - 2 * bottom, h - 2 * bottom, 2 * bottom, 2 * bottom, 0, 360 << 6};
+    }
+    if (n > 0)
+        xcb_poly_fill_arc(conn, mask, fill, n, arcs);
+
+    xcb_shape_mask(conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, window, 0, 0, mask);
+    self.hasCornerShape = YES;
+
+    xcb_free_gc(conn, clear);
+    xcb_free_gc(conn, fill);
+    xcb_free_pixmap(conn, mask);
+}
+
 #pragma mark - Resize Zones
 
 // Zones cover the resize bar the way GNUstep's resize bar handles clicks:
@@ -731,6 +798,8 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         if ([bar pixmapSize].width != barRect.size.width)
             [self renderResizeBar];
     }
+
+    [self applyCornerShape];
 
     XCBRect rects[3];
     [self resizeZoneRects:rects];

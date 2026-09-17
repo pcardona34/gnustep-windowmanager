@@ -155,6 +155,73 @@ static BOOL pressedButtonHighlighted = NO;
         NSRectFill(NSMakeRect(0, 0, r.size.width, 1));
 }
 
+// Outline the rounded corners of a decoration strip in the border colour.
++ (void)strokeRoundedCornersOfRect:(NSRect)r radius:(CGFloat)radius top:(BOOL)top
+{
+    if (radius <= 0)
+        return;
+
+    // Extend past the far edge so only the requested corners curve
+    NSRect shape = top ? NSMakeRect(NSMinX(r), NSMinY(r) - radius, NSWidth(r), NSHeight(r) + radius)
+                       : NSMakeRect(NSMinX(r), NSMinY(r), NSWidth(r), NSHeight(r) + radius);
+    NSBezierPath *stroke = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(shape, 0.5, 0.5)
+                                                           xRadius:radius - 0.5
+                                                           yRadius:radius - 0.5];
+    [NSGraphicsContext saveGraphicsState];
+    NSRectClip(r);
+    [[URSDecorationMetrics borderColor] set];
+    [stroke setLineWidth:1.0];
+    [stroke stroke];
+    [NSGraphicsContext restoreGraphicsState];
+}
+
+// Make the pixels outside rounded corners transparent (antialiased), directly
+// in the rendered bitmap. With a compositor they show what is behind the
+// window; without one the frame's shape mask hides them anyway.
+// Rows are top-down in the bitmap data.
++ (void)clearCornersOfBitmap:(NSBitmapImageRep *)bitmap radius:(int)radius top:(BOOL)top
+{
+    int width = (int)[bitmap pixelsWide];
+    int height = (int)[bitmap pixelsHigh];
+    if (radius <= 0 || radius > height || 2 * radius > width)
+        return;
+
+    BOOL premultiplied = ([bitmap bitmapFormat] & NSAlphaNonpremultipliedBitmapFormat) == 0;
+    int alphaIndex = ([bitmap bitmapFormat] & NSAlphaFirstBitmapFormat) ? 0 : 3;
+    unsigned char *data = [bitmap bitmapData];
+    int bytesPerRow = (int)[bitmap bytesPerRow];
+    const int samples = 4;
+
+    for (int dy = 0; dy < radius; dy++) {
+        int row = top ? dy : height - 1 - dy;
+        for (int dx = 0; dx < radius; dx++) {
+            // Coverage of pixel (dx, dy) by the circle centred at (radius, radius)
+            int inside = 0;
+            for (int sy = 0; sy < samples; sy++) {
+                for (int sx = 0; sx < samples; sx++) {
+                    double px = dx + (sx + 0.5) / samples - radius;
+                    double py = dy + (sy + 0.5) / samples - radius;
+                    if (px * px + py * py <= (double)radius * radius)
+                        inside++;
+                }
+            }
+            if (inside == samples * samples)
+                continue;
+
+            int cols[2] = {dx, width - 1 - dx};
+            for (int c = 0; c < 2; c++) {
+                uint8_t *px = data + row * bytesPerRow + cols[c] * 4;
+                if (premultiplied) {
+                    for (int k = 0; k < 4; k++)
+                        px[k] = (uint8_t)(px[k] * inside / (samples * samples));
+                } else {
+                    px[alphaIndex] = (uint8_t)(px[alphaIndex] * inside / (samples * samples));
+                }
+            }
+        }
+    }
+}
+
 + (void)drawTitleBarInRect:(NSRect)rect
                  styleMask:(NSUInteger)styleMask
                      state:(int)state
@@ -198,6 +265,10 @@ static BOOL pressedButtonHighlighted = NO;
         [cellButton setFrame:frame];
         [[cellButton cell] drawWithFrame:frame inView:cellButton];
     }
+
+    [self strokeRoundedCornersOfRect:rect
+                              radius:[URSDecorationMetrics topCornerRadiusForStyleMask:styleMask]
+                                 top:YES];
 }
 
 #pragma mark - Pixmap Upload
@@ -328,6 +399,9 @@ static BOOL pressedButtonHighlighted = NO;
                       titlebarId:[titlebar window]];
         [ctx flushGraphics];
         [NSGraphicsContext restoreGraphicsState];
+        [self clearCornersOfBitmap:bitmap
+                            radius:[URSDecorationMetrics topCornerRadiusForStyleMask:[frame decorationStyleMask]]
+                               top:YES];
 
         success = [self uploadBitmap:bitmap toWindow:titlebar];
         if (success)
@@ -382,8 +456,14 @@ static BOOL pressedButtonHighlighted = NO;
                            andTitle:@""];
         }
         [self strokeBorderForRect:rect top:NO bottom:YES];
+        [self strokeRoundedCornersOfRect:rect
+                                  radius:[URSDecorationMetrics bottomCornerRadiusForStyleMask:[frame decorationStyleMask]]
+                                     top:NO];
         [ctx flushGraphics];
         [NSGraphicsContext restoreGraphicsState];
+        [self clearCornersOfBitmap:bitmap
+                            radius:[URSDecorationMetrics bottomCornerRadiusForStyleMask:[frame decorationStyleMask]]
+                               top:NO];
 
         return [self uploadBitmap:bitmap toWindow:bar];
     } @catch (NSException *exception) {
