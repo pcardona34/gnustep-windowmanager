@@ -16,7 +16,7 @@
 #import "XCBRegion.h"
 #import <xcb/xcb_aux.h>
 #import <enums/EIcccm.h>
-#import "TitleBarSettingsService.h"
+#import "URSDecorationMetrics.h"
 #import "XCBTypes.h"
 #import <dispatch/dispatch.h>
 #import <GNUstepGUI/GSTheme.h>
@@ -1474,18 +1474,8 @@ static XCBConnection *sharedInstance;
         }
     }
 
-    // Query border color from theme (e.g. Eau's controlStrokeColor), with fallback
-    uint32_t borderPixel = 0xC0C0C0;
-    GSTheme *theme = [GSTheme theme];
-    if ([theme respondsToSelector:@selector(windowFrameBorderColor)]) {
-        NSColor *borderColor = [(id)theme performSelector:@selector(windowFrameBorderColor)];
-        if (borderColor) {
-            borderColor = [borderColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-            CGFloat r, g, b, a;
-            [borderColor getRed:&r green:&g blue:&b alpha:&a];
-            borderPixel = ((uint8_t)(r * 255) << 16) | ((uint8_t)(g * 255) << 8) | (uint8_t)(b * 255);
-        }
-    }
+    // Window border colour from the theme (windowBorderColor)
+    uint32_t borderPixel = [URSDecorationMetrics borderPixel] & 0x00FFFFFF;
 
     XCBVisual *visual = nil;
     uint32_t values[4];  // May need up to 4 values for ARGB (back_pixel, border_pixel, colormap, event_mask)
@@ -1541,9 +1531,6 @@ static XCBConnection *sharedInstance;
         values[0] = borderPixel;  // border color
         values[1] = FRAMEMASK;
     }
-
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-    uint16_t titleHeight = [settings heightDefined] ? [settings height] : [settings defaultHeight];
 
     int16_t reqX = [window windowRect].position.x;
     int16_t reqY = [window windowRect].position.y;
@@ -1620,16 +1607,20 @@ static XCBConnection *sharedInstance;
         isDialog = [[window windowType] isEqualToString:[ewmhService EWMHWMWindowTypeDialog]];
     }
 
-    // In compositor mode (drop shadows), the client sits flush inside the frame
-    // with no pixel-wide border strips, so cb=0.  Non-compositor uses cb=1.
-    int cb = compositorActive ? 0 : 1;
+    // Frame offsets follow the theme: border, title bar and resize bar
+    uint16_t offL, offR, offT, offB;
+    [URSDecorationMetrics offsetsForStyleMask:[XCBFrame decorationStyleMaskForClient:window
+                                                                          connection:self
+                                                                      documentEdited:NULL]
+                                         left:&offL right:&offR top:&offT bottom:&offB];
+    int cb = offL;
     // GNUstep's DPSplacewindow uses _XFrameToXHints which places the CLIENT at the
     // desired FRAME top-left position (not the content area position). So reqX/reqY
     // are already the frame coordinates — do NOT subtract cb or titleHeight.
     int16_t xPos = reqX;
     int16_t yPos = reqY;
-    uint16_t winWidth = reqW + 2 * (uint16_t)cb;
-    uint16_t winHeight = reqH + titleHeight + (uint16_t)cb;
+    uint16_t winWidth = reqW + offL + offR;
+    uint16_t winHeight = reqH + offT + offB;
 
     //NSLog(@"[MapRequest] Requested position for window %u: %d, %d (size %ux%u)", [window window], xPos, yPos, winWidth, winHeight);
 
@@ -1652,7 +1643,7 @@ static XCBConnection *sharedInstance;
         // Keep the client rect in root coordinates while frame uses xPos/yPos.
         XCBRect newRect = [window windowRect];
         newRect.position.x = xPos + cb;
-        newRect.position.y = yPos + titleHeight;
+        newRect.position.y = yPos + offT;
         [window setWindowRect:newRect];
     }
 
@@ -1704,7 +1695,7 @@ static XCBConnection *sharedInstance;
 
     // EWMH spec: _NET_FRAME_EXTENTS must be set on the CLIENT window.
     {
-        uint32_t extents[] = { (uint32_t)cb, (uint32_t)cb, (uint32_t)titleHeight, (uint32_t)cb };
+        uint32_t extents[] = { offL, offR, offT, offB };
         [ewmhService updateNetFrameExtentsForWindow:window andExtents:extents];
     }
     /*[self mapWindow:frame];
@@ -1825,7 +1816,6 @@ static XCBConnection *sharedInstance;
     ewmhService = nil;
     screen = nil;
     visual = nil;
-    settings = nil;
 }
 
 - (void)handleUnmapRequest:(xcb_unmap_window_request_t *)anEvent
@@ -2198,9 +2188,8 @@ static XCBConnection *sharedInstance;
 
         [frame resize:anEvent xcbConnection:connection];
 
-        // Keep rounded corners visible during interactive resize in non-composited mode.
-        // applyRoundedCornersShapeMask() uses cached geometry, so this avoids release-only updates.
-        [frame applyRoundedCornersShapeMask];
+        // Keep the resize bar attached to the bottom edge during live resize
+        [frame updateAllResizeZonePositions];
         needFlush = YES;
     }
 
@@ -2266,7 +2255,6 @@ static XCBConnection *sharedInstance;
             [clientWindow setFullScreen:NO];
             [frame setIsMaximized:NO];
             [frame updateAllResizeZonePositions];
-            [frame applyRoundedCornersShapeMask];
 
             {
                 Class compositorClass = NSClassFromString(@"URSCompositingManager");
@@ -2353,7 +2341,6 @@ static XCBConnection *sharedInstance;
         xcb_flush([self connection]);
 
         /*** Update shape mask for new dimensions ***/
-        [frame applyRoundedCornersShapeMask];
         //NSLog(@"[Maximize] applied rounded corners for frame %u", [frame window]);
 
         ewmhService = nil;
@@ -2521,11 +2508,6 @@ static XCBConnection *sharedInstance;
 
     titleBar = (XCBTitleBar *) [frame childWindowForKey:TitleBar];
     [titleBar setIsAbove:YES];
-    [titleBar setButtonsAbove:YES];
-    if (![titleBar isGSThemeActive]) {
-        [titleBar drawTitleBarComponents];
-        [self drawAllTitleBarsExcept:titleBar];
-    }
 
     XCBRect frameRect = [frame windowRect];
     XCBPoint relativeOffset = XCBMakePoint(anEvent->root_x - frameRect.position.x, anEvent->root_y - frameRect.position.y);
@@ -2535,9 +2517,6 @@ static XCBConnection *sharedInstance;
     {
         dragState = YES;
 
-        // Keep rounded corners stable during move in non-composited mode.
-        // This is a cheap one-time call per drag and repairs any stale mask state.
-        [frame applyRoundedCornersShapeMask];
         
         // Cache workarea when drag starts for performance
         XCBScreen *screen = [frame onScreen];
@@ -2688,10 +2667,6 @@ static XCBConnection *sharedInstance;
         {
             [frame refreshBorder];
             [frame configureClient];
-            // Re-apply rounded corner shape masks now that resize is final.
-            // Doing this during the resize motion would block on xcb_get_geometry
-            // on every pixel of movement, causing wild size jumps.
-            [frame applyRoundedCornersShapeMask];
             [frame updateAllResizeZonePositions];
         }
     }
@@ -3036,10 +3011,6 @@ static XCBConnection *sharedInstance;
             {
                 frame = (XCBFrame *) [window parentWindow];
                 titleBar = (XCBTitleBar *) [frame childWindowForKey:TitleBar]; //TODO: Can i put all this in a single method?
-                if (![titleBar isGSThemeActive]) {
-                    [titleBar drawTitleBarComponents];
-                    [self drawAllTitleBarsExcept:titleBar];
-                }
             }
         }
     }
@@ -3395,32 +3366,8 @@ static XCBConnection *sharedInstance;
         [window drawArea:area];
     }*/
 
-    if ([window isMaximizeButton])
-    {
-        titleBar = (XCBTitleBar*) [window parentWindow];
-        position = XCBMakePoint(anEvent->x, anEvent->y);
-        size = XCBMakeSize(anEvent->width, anEvent->height);
-        area = XCBMakeRect(position, size);
-        [[titleBar maximizeWindowButton] drawArea:area];
-    }
 
-    if ([window isCloseButton])
-    {
-        titleBar = (XCBTitleBar*) [window parentWindow];
-        position = XCBMakePoint(anEvent->x, anEvent->y);
-        size = XCBMakeSize(anEvent->width, anEvent->height);
-        area = XCBMakeRect(position, size);
-        [[titleBar hideWindowButton] drawArea:area];
-    }
 
-    if ([window isMinimizeButton])
-    {
-        titleBar = (XCBTitleBar*) [window parentWindow];
-        position = XCBMakePoint(anEvent->x, anEvent->y);
-        size = XCBMakeSize(anEvent->width, anEvent->height);
-        area = XCBMakeRect(position, size);
-        [[titleBar minimizeWindowButton] drawArea:area];
-    }
 
     if ([window isKindOfClass:[XCBTitleBar class]])
     {
@@ -3533,9 +3480,6 @@ static XCBConnection *sharedInstance;
         [frameWindow needDestroy]) /*evaluete if the check on destroy window is necessary or not */
     {
         titleBarWindow = (XCBTitleBar *) [frameWindow childWindowForKey:TitleBar];
-        [self unregisterWindow:[titleBarWindow hideWindowButton]];
-        [self unregisterWindow:[titleBarWindow minimizeWindowButton]];
-        [self unregisterWindow:[titleBarWindow maximizeWindowButton]];
         [self unregisterWindow:titleBarWindow];
         [self unregisterWindow:clientWindow];
         [[frameWindow getChildren] removeAllObjects];
@@ -3634,56 +3578,8 @@ static XCBConnection *sharedInstance;
 
 - (void)drawAllTitleBarsExcept:(XCBTitleBar *)aTitileBar
 {
-    // When GSTheme is active, titlebars are rendered exclusively through
-    // focus events (handleFocusChange:) — stacking order must NOT determine
-    // which titlebar appears active.  Short-circuit here so that isAbove
-    // (set to NO on all non-clicked windows below) never overrides the
-    // focus-driven GSTheme pixmap content.
-    if ([aTitileBar isGSThemeActive]) {
-        return;
-    }
-
-    NSArray *windows = [windowsMap allValues];
-    NSUInteger size = [windows count];
-
-    for (int i = 0; i < size; i++)
-    {
-        XCBWindow *tmp = [windows objectAtIndex:i];
-
-        if ([tmp isKindOfClass:[XCBTitleBar class]])
-        {
-            XCBTitleBar *titleBar = (XCBTitleBar *) tmp;
-
-            if (titleBar != aTitileBar)
-            {
-                XCBFrame *frame = (XCBFrame *) [titleBar parentWindow];
-                XCBWindow *clientWindow = [frame childWindowForKey:ClientWindow];
-
-                if ([clientWindow alwaysOnTop])
-                {
-                    //NSLog(@"Always on top");
-                    windows = nil;
-                    tmp = nil;
-                    frame = nil;
-                    clientWindow = nil;
-                    titleBar = nil;
-                    continue;
-                }
-
-                [titleBar setIsAbove:NO];
-                [titleBar setButtonsAbove:NO];
-                [titleBar drawTitleBarComponents];
-                [frame setIsAbove:NO];
-                frame = nil;
-            }
-
-            titleBar = nil;
-        }
-
-        tmp = nil;
-    }
-
-    windows = nil;
+    // Title bars are rendered by the GSTheme integration from focus events;
+    // stacking order must not decide which title bar appears active.
 }
 
 - (void) sendEvent:(const char *)anEvent toClient:(XCBWindow*)aWindow propagate:(BOOL)propagating
@@ -3917,9 +3813,6 @@ static XCBConnection *sharedInstance;
         XCBTitleBar *titleBar = (XCBTitleBar *)[frame childWindowForKey:TitleBar];
         if (titleBar) {
             [titleBar setIsAbove:(anEvent->place == XCB_CIRCULATE_RAISE_LOWEST)];
-            if (![titleBar isGSThemeActive]) {
-                [titleBar drawTitleBarComponents];
-            }
         }
     }
 
@@ -3973,7 +3866,6 @@ static XCBConnection *sharedInstance;
     [frame programmaticResizeToRect:target];
     [frame setMaximizedVertically:YES];
     [frame updateAllResizeZonePositions];
-    [frame applyRoundedCornersShapeMask];
 
     [self flush];
 }
@@ -3994,7 +3886,6 @@ static XCBConnection *sharedInstance;
     [frame programmaticResizeToRect:target];
     [frame setMaximizedHorizontally:YES];
     [frame updateAllResizeZonePositions];
-    [frame applyRoundedCornersShapeMask];
 
     [self flush];
 }
@@ -4101,7 +3992,6 @@ static XCBConnection *sharedInstance;
     }
 
     [frame updateAllResizeZonePositions];
-    [frame applyRoundedCornersShapeMask];
 
     // Redraw title bar
     XCBTitleBar *titleBar = (XCBTitleBar *)[frame childWindowForKey:TitleBar];
@@ -4343,7 +4233,6 @@ static XCBConnection *sharedInstance;
 
     [frame programmaticResizeToRect:targetRect];
     [frame updateAllResizeZonePositions];
-    [frame applyRoundedCornersShapeMask];
 
     [self flush];
 }
@@ -4376,7 +4265,6 @@ static XCBConnection *sharedInstance;
 
     [frame programmaticResizeToRect:targetRect];
     [frame updateAllResizeZonePositions];
-    [frame applyRoundedCornersShapeMask];
 
     [self flush];
 }

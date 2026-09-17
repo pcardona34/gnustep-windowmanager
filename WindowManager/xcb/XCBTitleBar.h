@@ -10,7 +10,6 @@
 #import "XCBWindow.h"
 #import "XCBFrame.h"
 #import "EWMHService.h"
-#import "ETitleBarColor.h"
 #import "XCBTypes.h"
 
 
@@ -26,36 +25,16 @@ XCB_EVENT_MASK_KEY_PRESS
 
 @interface XCBTitleBar : XCBWindow
 {
-    xcb_arc_t arcs[1];
     NSString *windowTitle;
 }
 
-@property (nonatomic, assign) XCBColor hideButtonColor;
-@property (nonatomic, assign) XCBColor minimizeButtonColor;
-@property (nonatomic, assign) XCBColor maximizeButtonColor;
-@property (strong, nonatomic) XCBWindow *hideWindowButton;
-@property (strong, nonatomic) XCBWindow *minimizeWindowButton;
-@property (strong, nonatomic) XCBWindow *maximizeWindowButton;
-@property (nonatomic, assign) xcb_arc_t arc;
-@property (nonatomic, assign) XCBColor titleBarUpColor;
-@property (nonatomic, assign) XCBColor titleBarDownColor;
 @property (strong, nonatomic) EWMHService *ewmhService;
 @property (nonatomic, assign) BOOL titleIsSet;
 
 - (id) initWithFrame:(XCBFrame*) aFrame withConnection:(XCBConnection*) aConnection;
-- (void) drawArcsForColor:(TitleBarColor)aColor;
 
-/***
-* Draws the titlebar with the color argument.
-* aColor: The color to draw the title bar; if nil titleBarStandardColor is used.
-***/
-
-- (void) drawTitleBarForColor:(TitleBarColor)aColor; //maybe is better to set the color all the time if the default one is not desidered.
+// Copy the GSTheme-rendered pixmap into the window
 - (void) drawTitleBarComponents;
-- (void) drawTitleBarComponentsPixmaps;
-- (void) generateButtons;
-- (void) setButtonsAbove:(BOOL)aValue;
-- (void) putButtonsBackgroundPixmaps:(BOOL)aValue;
 
 /****************
  *    ACCESORS  *
@@ -64,13 +43,7 @@ XCB_EVENT_MASK_KEY_PRESS
 - (void) setWindowTitle:(NSString*) title;
 - (NSString*) windowTitle;
 
-// OPTIMIZATION: Set internal title without expensive legacy rendering
-// Used when GSTheme will handle the actual rendering
+// Set the title without redrawing; the GSTheme integration renders it
 - (void) setInternalTitle:(NSString*) title;
-
-- (xcb_arc_t*) arcs;
-
-// GSTheme integration
-- (BOOL) isGSThemeActive;
 
 @end

@@ -9,31 +9,16 @@
 #import "XCBFrame.h"
 #import "Transformers.h"
 #import "ICCCMService.h"
-#import "TitleBarSettingsService.h"
+#import "URSDecorationMetrics.h"
 #import "XCBTypes.h"
 #import <AppKit/NSScroller.h>
 #import <GNUstepGUI/GSTheme.h>
+#import "URSDecorationMetrics.h"
 
 // Protocol for compositor manager to check if compositing is active
 @protocol URSCompositingManaging <NSObject>
 + (instancetype)sharedManager;
 - (BOOL)compositingActive;
-@end
-
-// Informal protocol for theme-driven resize zones
-// Themes implementing these methods enable the resize zone protocol
-@interface NSObject (GSThemeResizeZones)
-- (CGFloat)resizeZoneCornerSize;
-- (CGFloat)resizeZoneEdgeThickness;
-- (BOOL)resizeZoneEnabled:(NSInteger)direction;
-- (BOOL)themeRendersResizeVisual;
-// Grow box zone (optional overlay in bottom-right)
-- (BOOL)resizeZoneHasGrowBox;
-- (CGFloat)resizeZoneGrowBoxSize;
-// Titlebar corner radius for rounded top corners (0 = square corners)
-- (CGFloat)titlebarCornerRadius;
-// Window bottom corner radius for rounded bottom corners (0 = square corners)
-- (CGFloat)windowBottomCornerRadius;
 @end
 
 // Helper function to send synthetic ConfigureNotify to client during resize
@@ -147,21 +132,19 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         [aClientWindow setCanResize:NO];
     }
 
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-    titleHeight = [settings heightDefined] ? [settings height] : [settings defaultHeight];
-
-    // Determine client border: 0 in compositor mode (drop shadow handles visual separation),
-    // 1 in non-compositor mode (thin strip of frame background as border).
-    // Stored on self for use in resize functions and queried again in decorateClientWindow.
+    // Decoration geometry comes from the theme and the client's style
     {
-        Class compositorClass = NSClassFromString(@"URSCompositingManager");
-        int cb = 1;
-        if (compositorClass && [compositorClass respondsToSelector:@selector(sharedManager)]) {
-            id manager = [compositorClass sharedManager];
-            if ([manager respondsToSelector:@selector(compositingActive)])
-                cb = [manager compositingActive] ? 0 : 1;
-        }
-        self.clientBorder = cb;
+        BOOL edited = NO;
+        uint16_t l, r, t, b;
+        self.decorationStyleMask = [XCBFrame decorationStyleMaskForClient:aClientWindow
+                                                               connection:aConnection
+                                                           documentEdited:&edited];
+        self.documentEdited = edited;
+        [URSDecorationMetrics offsetsForStyleMask:self.decorationStyleMask
+                                             left:&l right:&r top:&t bottom:&b];
+        titleHeight = t;
+        self.clientBorder = l;
+        self.bottomBorder = b;
     }
 
     if (minWidthHint > [aClientWindow windowRect].size.width)
@@ -183,7 +166,7 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         XCBRect rect = XCBMakeRect(XCBMakePoint(0,0), XCBMakeSize([aClientWindow windowRect].size.width, minHeightHint));
         [aClientWindow setWindowRect:rect];
         [aClientWindow setOriginalRect:rect];
-        rect.size.height = rect.size.height + titleHeight + self.clientBorder;
+        rect.size.height = rect.size.height + titleHeight + self.bottomBorder;
         [self setWindowRect:rect];
         [self setOriginalRect:rect];
         uint32_t values[] = {rect.size.height};
@@ -202,7 +185,6 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     free(sizeHints);
     icccmService = nil;
     key= nil;
-    settings = nil;
 
     return self;
 }
@@ -249,10 +231,6 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         }
     }
 
-    // Update clientBorder now that we have definitive compositor state.
-    // 0 = compositor mode (client flush with frame; drop shadow separates visually)
-    // 1 = non-compositor mode (1px border on left, right, bottom)
-    self.clientBorder = compositorActive ? 0 : 1;
 
     uint32_t values[4];  // May need up to 4 values for ARGB (back_pixel, colormap, border_pixel, event_mask)
     uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
@@ -294,9 +272,8 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         }
     }
 
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
 
-    uint16_t height = [settings heightDefined] ? [settings height] : [settings defaultHeight];
+    uint16_t height = titleHeight;
 
     XCBCreateWindowTypeRequest* request = [[XCBCreateWindowTypeRequest alloc] initForWindowType:XCBTitleBarRequest];
     [request setDepth:depth];
@@ -365,14 +342,6 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     
     // OPTIMIZATION: Skip button generation and legacy drawing when GSTheme is active
     // These operations are expensive and get completely overwritten by GSTheme
-    if (![titleBar isGSThemeActive]) {
-        [titleBar generateButtons];
-        [titleBar setButtonsAbove:YES];
-        [titleBar drawTitleBarComponentsPixmaps];
-        [titleBar putWindowBackgroundWithPixmap:[titleBar pixmap]];
-        [titleBar putButtonsBackgroundPixmaps:YES];
-        [titleBar setWindowTitle:windowTitle];
-    }
     
     [titleBar setIsAbove:YES];
     [clientWindow setDecorated:YES];
@@ -382,7 +351,7 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     // Store title for later GSTheme rendering
     [titleBar setInternalTitle:windowTitle];
 
-    // Position client window below titlebar; inset by clientBorder (1px in non-compositor, 0 in compositor)
+    // Position client window below titlebar, inset by the theme window border
     int cb = self.clientBorder;
     XCBPoint position = XCBMakePoint(cb, height);
 
@@ -403,22 +372,20 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     // Ensure no borders on client window
     xcb_configure_window([connection connection], [clientWindow window], XCB_CONFIG_WINDOW_BORDER_WIDTH, border);
 
-    // Resize client to fill frame below titlebar (minus clientBorder on sides and bottom)
+    // Resize client to fill frame between titlebar and resize bar / border
     uint32_t clientSize[2] = {[self windowRect].size.width - 2 * (uint32_t)cb,
-                              [self windowRect].size.height - height - (uint32_t)cb};
+                              [self windowRect].size.height - height - (uint32_t)self.bottomBorder};
     xcb_configure_window([connection connection], [clientWindow window],
                          XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, clientSize);
     
     // Flush to ensure reparent and map operations complete before continuing
     [connection flush];
     
-    // Create resize zones for resizable windows with decorations only
-    if ([clientWindow canResize] && [clientWindow decorated]) {
+    // Theme resize bar and its resize zones for resizable windows
+    if ([URSDecorationMetrics hasResizeBarForStyleMask:self.decorationStyleMask]) {
+        [self createResizeBarWithDepth:depth visual:titlebarVisual colormap:argbColormap];
         [self createResizeZonesFromTheme];
     }
-
-    // Apply rounded top corners shape mask
-    [self applyRoundedCornersShapeMask];
 
     titleBar = nil;
     clientWindow = nil;
@@ -426,61 +393,96 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     windowTitle = nil;
     scr = nil;
     rootVisual = nil;
-    settings = nil;
 
     free(reply);
 }
 
-- (void)createResizeHandle
+// Values from libs-back Headers/x11/XGServerWindow.h (GNUstepWMAttributes)
+#define GS_WM_ATTR_WORDS        9
+#define GS_WINDOW_STYLE_ATTR    (1 << 0)
+#define GS_EXTRA_FLAGS_ATTR     (1 << 7)
+#define GS_DOCUMENT_EDITED_FLAG (1 << 0)
+
++ (NSUInteger) decorationStyleMaskForClient:(XCBWindow*)clientWindow
+                                 connection:(XCBConnection*)aConnection
+                             documentEdited:(BOOL*)edited
 {
-    // Get scrollbar width from current theme
-    CGFloat scrollerWidth = [NSScroller scrollerWidth];
-    uint16_t handleSize = (uint16_t)scrollerWidth;
+    NSUInteger mask = 0;
+    BOOL isEdited = NO;
+    BOOL haveGNUstepStyle = NO;
 
-    // Create a square at bottom-right matching scrollbar width
-    xcb_window_t resizeHandleWindow = xcb_generate_id([connection connection]);
+    EWMHService *ewmhService = [EWMHService sharedInstanceWithConnection:aConnection];
+    xcb_atom_t attrAtom = [[ewmhService atomService] atomFromCachedAtomsWithKey:[ewmhService GNUStepWmAttr]];
+    if (attrAtom != XCB_ATOM_NONE) {
+        xcb_get_property_cookie_t cookie =
+            xcb_get_property([aConnection connection], 0, [clientWindow window], attrAtom,
+                             XCB_GET_PROPERTY_TYPE_ANY, 0, GS_WM_ATTR_WORDS);
+        xcb_get_property_reply_t *reply =
+            xcb_get_property_reply([aConnection connection], cookie, NULL);
+        if (reply) {
+            int words = (reply->format == 32) ? xcb_get_property_value_length(reply) / 4 : 0;
+            uint32_t *attr = xcb_get_property_value(reply);
+            if (words >= 2 && (attr[0] & GS_WINDOW_STYLE_ATTR)) {
+                mask = attr[1] & URSDecorationStyleBits;
+                haveGNUstepStyle = YES;
+            }
+            if (words >= GS_WM_ATTR_WORDS && (attr[0] & GS_EXTRA_FLAGS_ATTR))
+                isEdited = (attr[8] & GS_DOCUMENT_EDITED_FLAG) != 0;
+            free(reply);
+        }
+    }
 
-    XCBRect frameRect = [self windowRect];
-    int16_t handleX = frameRect.size.width - handleSize;
-    int16_t handleY = frameRect.size.height - handleSize;
+    if (!haveGNUstepStyle) {
+        // Plain X11 client: derive the style from ICCCM/EWMH hints
+        mask = NSTitledWindowMask;
+        ICCCMService *icccm = [ICCCMService sharedInstanceWithConnection:aConnection];
+        if ([clientWindow canClose] &&
+            [icccm hasProtocol:[icccm WMDeleteWindow] forWindow:clientWindow])
+            mask |= NSClosableWindowMask;
+        if ([clientWindow canMinimize])
+            mask |= NSMiniaturizableWindowMask;
 
-    // InputOnly window - invisible, just captures mouse events
-    // Theme renders the grow box visual in the scroll view corner
-    uint32_t mask = XCB_CW_EVENT_MASK | XCB_CW_CURSOR;
-    uint32_t values[2];
+        BOOL fixedSize = NO;
+        xcb_size_hints_t *hints = [icccm wmNormalHintsForWindow:clientWindow];
+        if (hints) {
+            fixedSize = (hints->flags & XCB_ICCCM_SIZE_HINT_P_MIN_SIZE) &&
+                        (hints->flags & XCB_ICCCM_SIZE_HINT_P_MAX_SIZE) &&
+                        hints->min_width == hints->max_width &&
+                        hints->min_height == hints->max_height;
+            free(hints);
+        }
+        if ([clientWindow canResize] && !fixedSize)
+            mask |= NSResizableWindowMask;
+    }
 
-    // Get diagonal resize cursor (bottom-right) without mutating selection state
-    xcb_cursor_t resizeCursor = [[self cursor] cursorIdForPosition:BottomRightCorner];
+    if (!(mask & NSResizableWindowMask))
+        [clientWindow setCanResize:NO];
 
-    values[0] = XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE |
-                XCB_EVENT_MASK_POINTER_MOTION | XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_LEAVE_WINDOW;
-    values[1] = resizeCursor;
+    if (mask == 0)
+        mask = NSTitledWindowMask;  // we only frame windows that want decorations
 
-    xcb_create_window([connection connection],
-                      XCB_COPY_FROM_PARENT,
-                      resizeHandleWindow,
-                      window, // Parent is the frame
-                      handleX, handleY,
-                      handleSize, handleSize,
-                      0, // no border
-                      XCB_WINDOW_CLASS_INPUT_ONLY,
-                      XCB_COPY_FROM_PARENT,
-                      mask,
-                      values);
+    if (edited)
+        *edited = isEdited;
+    return mask;
+}
 
-    // Create XCBWindow wrapper and register it
-    XCBWindow *resizeHandle = [[XCBWindow alloc] initWithXCBWindow:resizeHandleWindow andConnection:connection];
-    [resizeHandle setParentWindow:self];
-    [self addChildWindow:resizeHandle withKey:ResizeHandle];
-    [connection registerWindow:resizeHandle];
+- (BOOL) updateDecorationStyleFromClient
+{
+    XCBWindow *clientWindow = [self childWindowForKey:ClientWindow];
+    if (!clientWindow)
+        return NO;
 
-    // Map the resize handle
-    xcb_map_window([connection connection], resizeHandleWindow);
+    BOOL edited = NO;
+    NSUInteger mask = [XCBFrame decorationStyleMaskForClient:clientWindow
+                                                  connection:connection
+                                              documentEdited:&edited];
 
-    // Raise resize handle above siblings (titlebar, client window) so it captures events
-    [resizeHandle stackAbove];
-
-    [connection flush];
+    // Geometry (resize bar, title bar) is fixed when the frame is created;
+    // only the title bar contents follow later style changes.
+    BOOL changed = (mask != self.decorationStyleMask) || (edited != self.documentEdited);
+    self.decorationStyleMask = mask;
+    self.documentEdited = edited;
+    return changed;
 }
 
 /*** performance while resizing pixel by pixel is critical so we do everything we can to improve it also if the message signature looks bad ***/
@@ -551,39 +553,9 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
 
 }
 
-- (void)updateResizeHandlePosition
-{
-    XCBWindow *resizeHandle = [self childWindowForKey:ResizeHandle];
-    if (resizeHandle) {
-        // Get current scrollbar width from theme
-        CGFloat scrollerWidth = [NSScroller scrollerWidth];
-        uint16_t handleSize = (uint16_t)scrollerWidth;
-
-        XCBRect frameRect = [self windowRect];
-        int16_t handleX = frameRect.size.width - handleSize;
-        int16_t handleY = frameRect.size.height - handleSize;
-
-        // Update position and ensure handle stays above siblings in one call
-        uint32_t values[3] = {handleX, handleY, XCB_STACK_MODE_ABOVE};
-        xcb_configure_window([connection connection],
-                           [resizeHandle window],
-                           XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_STACK_MODE,
-                           values);
-    }
-}
-
 - (void)raiseResizeHandle
 {
-    // Raise legacy resize handle
-    XCBWindow *resizeHandle = [self childWindowForKey:ResizeHandle];
-    if (resizeHandle) {
-        [resizeHandle stackAbove];
-    }
-
-    // Raise all theme-driven resize zones
-    childrenMask zones[] = {ResizeZoneNW, ResizeZoneN, ResizeZoneNE, ResizeZoneE,
-                           ResizeZoneSE, ResizeZoneS, ResizeZoneSW, ResizeZoneW,
-                           ResizeZoneGrowBox};
+    childrenMask zones[] = {ResizeZoneSW, ResizeZoneS, ResizeZoneSE};
     for (int i = 0; i < sizeof(zones)/sizeof(zones[0]); i++) {
         XCBWindow *zone = [self childWindowForKey:zones[i]];
         if (zone) {
@@ -592,93 +564,102 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     }
 }
 
-#pragma mark - Theme-driven Resize Zones
+#pragma mark - Resize Bar
 
-- (void)createResizeZonesFromTheme
+- (void)createResizeBarWithDepth:(uint8_t)depth
+                          visual:(XCBVisual *)visual
+                        colormap:(xcb_colormap_t)colormap
 {
-    // Query theme for resize zone support using respondsToSelector:
-    // This allows themes to implement resize zones without requiring libs-gui changes
-    GSTheme *theme = [GSTheme theme];
+    XCBRect frameRect = [self windowRect];
+    uint16_t barHeight = (uint16_t)self.bottomBorder;
+    xcb_window_t barWindow = xcb_generate_id([connection connection]);
 
-    // Check if theme supports the resize zone protocol
-    if (![theme respondsToSelector:@selector(resizeZoneCornerSize)]) {
-        // Theme doesn't support resize zones - fall back to legacy single resize handle
-        [self createResizeHandle];
+    uint32_t mask = XCB_CW_BACK_PIXEL;
+    uint32_t values[3];
+    int n = 0;
+    values[n++] = [URSDecorationMetrics borderPixel];
+    if (depth == 32 && colormap != XCB_NONE) {
+        mask |= XCB_CW_BORDER_PIXEL | XCB_CW_COLORMAP;
+        values[n++] = 0;
+        values[n++] = colormap;
+    }
+
+    xcb_create_window([connection connection],
+                      depth,
+                      barWindow,
+                      window,
+                      0, (int16_t)(frameRect.size.height - barHeight),
+                      frameRect.size.width, barHeight,
+                      0,
+                      XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                      visual ? [visual visualId] : XCB_COPY_FROM_PARENT,
+                      mask,
+                      values);
+
+    XCBWindow *bar = [[XCBWindow alloc] initWithXCBWindow:barWindow andConnection:connection];
+    [bar setParentWindow:self];
+    [bar setWindowRect:XCBMakeRect(XCBMakePoint(0, frameRect.size.height - barHeight),
+                                   XCBMakeSize(frameRect.size.width, barHeight))];
+    if (depth == 32 && visual) {
+        [bar setUse32BitDepth:YES];
+        [bar setArgbVisualId:[visual visualId]];
+    }
+    [self addChildWindow:bar withKey:ResizeBar];
+    xcb_map_window([connection connection], barWindow);
+
+    [self renderResizeBar];
+}
+
+- (void)renderResizeBar
+{
+    XCBWindow *bar = [self childWindowForKey:ResizeBar];
+    if (!bar)
         return;
+
+    Class themeIntegration = NSClassFromString(@"URSThemeIntegration");
+    if ([themeIntegration respondsToSelector:@selector(renderResizeBarForFrame:)] &&
+        [themeIntegration performSelector:@selector(renderResizeBarForFrame:) withObject:self]) {
+        [bar putWindowBackgroundWithPixmap:[bar pixmap]];
+        [bar drawArea:XCBMakeRect(XCBMakePoint(0, 0), [bar windowRect].size)];
     }
+}
 
-    // Get resize zone dimensions from theme
-    CGFloat cornerSize = [theme resizeZoneCornerSize];
-    CGFloat edgeThickness = 4.0; // Default edge thickness
+#pragma mark - Resize Zones
 
-    if ([theme respondsToSelector:@selector(resizeZoneEdgeThickness)]) {
-        edgeThickness = [theme resizeZoneEdgeThickness];
-    }
-
+// Zones cover the resize bar the way GNUstep's resize bar handles clicks:
+// the notched ends resize diagonally, the middle resizes vertically.
+- (void)resizeZoneRects:(XCBRect *)rects
+{
     XCBRect frameRect = [self windowRect];
     CGFloat w = frameRect.size.width;
     CGFloat h = frameRect.size.height;
+    CGFloat barHeight = self.bottomBorder;
+    CGFloat notch = [URSDecorationMetrics resizebarNotchWidth];
+    if (notch * 2 > w)
+        notch = floor(w / 2);
 
-    // Create resize zones for all 8 directions
-    // Corners (square zones)
-    [self createResizeZoneAtX:0 y:0
-                        width:cornerSize height:cornerSize
-                     position:TopLeftCorner
-                          key:ResizeZoneNW];
+    rects[0] = XCBMakeRect(XCBMakePoint(0, h - barHeight), XCBMakeSize(notch, barHeight));
+    rects[1] = XCBMakeRect(XCBMakePoint(notch, h - barHeight), XCBMakeSize(w - 2 * notch, barHeight));
+    rects[2] = XCBMakeRect(XCBMakePoint(w - notch, h - barHeight), XCBMakeSize(notch, barHeight));
+}
 
-    [self createResizeZoneAtX:w - cornerSize y:0
-                        width:cornerSize height:cornerSize
-                     position:TopRightCorner
-                          key:ResizeZoneNE];
+- (void)createResizeZonesFromTheme
+{
+    if (![URSDecorationMetrics hasResizeBarForStyleMask:self.decorationStyleMask])
+        return;
 
-    [self createResizeZoneAtX:0 y:h - cornerSize
-                        width:cornerSize height:cornerSize
-                     position:BottomLeftCorner
-                          key:ResizeZoneSW];
+    XCBRect rects[3];
+    [self resizeZoneRects:rects];
+    MousePosition positions[3] = {BottomLeftCorner, BottomBorder, BottomRightCorner};
+    childrenMask keys[3] = {ResizeZoneSW, ResizeZoneS, ResizeZoneSE};
 
-    // Only create SE corner zone if grow box is NOT enabled
-    // (grow box replaces SE corner with a larger zone)
-    BOOL hasGrowBox = [theme respondsToSelector:@selector(resizeZoneHasGrowBox)] &&
-                      [theme resizeZoneHasGrowBox];
-    if (!hasGrowBox) {
-        [self createResizeZoneAtX:w - cornerSize y:h - cornerSize
-                            width:cornerSize height:cornerSize
-                         position:BottomRightCorner
-                              key:ResizeZoneSE];
-    }
-
-    // Edges (thin zones between corners)
-    [self createResizeZoneAtX:cornerSize y:0
-                        width:w - 2*cornerSize height:edgeThickness
-                     position:TopBorder
-                          key:ResizeZoneN];
-
-    [self createResizeZoneAtX:cornerSize y:h - edgeThickness
-                        width:w - 2*cornerSize height:edgeThickness
-                     position:BottomBorder
-                          key:ResizeZoneS];
-
-    [self createResizeZoneAtX:0 y:cornerSize
-                        width:edgeThickness height:h - 2*cornerSize
-                     position:LeftBorder
-                          key:ResizeZoneW];
-
-    [self createResizeZoneAtX:w - edgeThickness y:cornerSize
-                        width:edgeThickness height:h - 2*cornerSize
-                     position:RightBorder
-                          key:ResizeZoneE];
-
-    // Optionally create grow box zone (overlays SE corner with larger size)
-    if ([theme respondsToSelector:@selector(resizeZoneHasGrowBox)] &&
-        [theme resizeZoneHasGrowBox]) {
-        CGFloat growBoxSize = cornerSize; // Default to corner size
-        if ([theme respondsToSelector:@selector(resizeZoneGrowBoxSize)]) {
-            growBoxSize = [theme resizeZoneGrowBoxSize];
-        }
-        [self createResizeZoneAtX:w - growBoxSize y:h - growBoxSize
-                            width:growBoxSize height:growBoxSize
-                         position:BottomRightCorner
-                              key:ResizeZoneGrowBox];
+    for (int i = 0; i < 3; i++) {
+        if ([self childWindowForKey:keys[i]])
+            continue;
+        [self createResizeZoneAtX:rects[i].position.x y:rects[i].position.y
+                            width:rects[i].size.width height:rects[i].size.height
+                         position:positions[i]
+                              key:keys[i]];
     }
 
     [connection flush];
@@ -734,53 +715,37 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
 
 - (void)updateAllResizeZonePositions
 {
-    GSTheme *theme = [GSTheme theme];
-
-    // Check if we're using theme-driven zones or legacy resize handle
-    if (![theme respondsToSelector:@selector(resizeZoneCornerSize)]) {
-        // Using legacy resize handle
-        [self updateResizeHandlePosition];
-        return;
-    }
-
-    CGFloat cornerSize = [theme resizeZoneCornerSize];
-    CGFloat edgeThickness = 4.0;
-
-    if ([theme respondsToSelector:@selector(resizeZoneEdgeThickness)]) {
-        edgeThickness = [theme resizeZoneEdgeThickness];
-    }
-
-    XCBRect frameRect = [self windowRect];
-    CGFloat w = frameRect.size.width;
-    CGFloat h = frameRect.size.height;
-
-    // Update corner positions
-    [self updateResizeZone:ResizeZoneNW toX:0 y:0 width:cornerSize height:cornerSize];
-    [self updateResizeZone:ResizeZoneNE toX:w - cornerSize y:0 width:cornerSize height:cornerSize];
-    [self updateResizeZone:ResizeZoneSW toX:0 y:h - cornerSize width:cornerSize height:cornerSize];
-    [self updateResizeZone:ResizeZoneSE toX:w - cornerSize y:h - cornerSize width:cornerSize height:cornerSize];
-
-    // Update edge positions
-    [self updateResizeZone:ResizeZoneN toX:cornerSize y:0 width:w - 2*cornerSize height:edgeThickness];
-    [self updateResizeZone:ResizeZoneS toX:cornerSize y:h - edgeThickness width:w - 2*cornerSize height:edgeThickness];
-    [self updateResizeZone:ResizeZoneW toX:0 y:cornerSize width:edgeThickness height:h - 2*cornerSize];
-    [self updateResizeZone:ResizeZoneE toX:w - edgeThickness y:cornerSize width:edgeThickness height:h - 2*cornerSize];
-
-    // Update grow box zone if present
-    if ([theme respondsToSelector:@selector(resizeZoneHasGrowBox)] &&
-        [theme resizeZoneHasGrowBox]) {
-        CGFloat growBoxSize = cornerSize;
-        if ([theme respondsToSelector:@selector(resizeZoneGrowBoxSize)]) {
-            growBoxSize = [theme resizeZoneGrowBoxSize];
+    XCBWindow *bar = [self childWindowForKey:ResizeBar];
+    if (bar) {
+        XCBRect frameRect = [self windowRect];
+        XCBRect barRect = XCBMakeRect(XCBMakePoint(0, frameRect.size.height - self.bottomBorder),
+                                      XCBMakeSize(frameRect.size.width, self.bottomBorder));
+        XCBRect oldRect = [bar windowRect];
+        if (oldRect.position.y != barRect.position.y || oldRect.size.width != barRect.size.width) {
+            uint32_t values[3] = {(uint32_t)barRect.position.y, barRect.size.width, barRect.size.height};
+            xcb_configure_window([connection connection], [bar window],
+                                 XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,
+                                 values);
+            [bar setWindowRect:barRect];
         }
-        [self updateResizeZone:ResizeZoneGrowBox toX:w - growBoxSize y:h - growBoxSize width:growBoxSize height:growBoxSize];
+        if ([bar pixmapSize].width != barRect.size.width)
+            [self renderResizeBar];
+    }
+
+    XCBRect rects[3];
+    [self resizeZoneRects:rects];
+    childrenMask keys[3] = {ResizeZoneSW, ResizeZoneS, ResizeZoneSE};
+    for (int i = 0; i < 3; i++) {
+        [self updateResizeZone:keys[i]
+                           toX:rects[i].position.x y:rects[i].position.y
+                         width:rects[i].size.width height:rects[i].size.height];
     }
 }
 
 - (void)updateResizeZone:(childrenMask)key toX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
 {
     XCBWindow *zone = [self childWindowForKey:key];
-    if (zone) {
+    if (zone && width > 0 && height > 0) {
         uint32_t values[5] = {(uint32_t)x, (uint32_t)y, (uint32_t)width, (uint32_t)height, XCB_STACK_MODE_ABOVE};
         xcb_configure_window([connection connection],
                            [zone window],
@@ -793,10 +758,9 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
 
 - (void)destroyResizeZones
 {
-    // Destroy all resize zone windows
     childrenMask zones[] = {ResizeZoneNW, ResizeZoneN, ResizeZoneNE, ResizeZoneE,
                            ResizeZoneSE, ResizeZoneS, ResizeZoneSW, ResizeZoneW,
-                           ResizeZoneGrowBox, ResizeHandle}; // Also handle legacy
+                           ResizeZoneGrowBox, ResizeHandle};
 
     for (int i = 0; i < sizeof(zones)/sizeof(zones[0]); i++) {
         XCBWindow *zone = [self childWindowForKey:zones[i]];
@@ -804,102 +768,6 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
             xcb_destroy_window([connection connection], [zone window]);
             [connection unregisterWindow:zone];
             [self removeChild:zones[i]];
-        }
-    }
-}
-
-- (void)clearShapeMasks
-{
-    // Remove any XShape bounding mask from the frame and titlebar windows so that
-    // the entire rectangle is visible during live resize.  This removes the stale
-    // pre-resize clip that would otherwise blank newly-painted pixels when the
-    // window grows.  Rounded corners are re-applied in full at button release.
-    const xcb_query_extension_reply_t *ext =
-        xcb_get_extension_data([connection connection], &xcb_shape_id);
-    if (!ext || !ext->present) return;
-
-    xcb_connection_t *conn = [connection connection];
-    xcb_shape_mask(conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING, window, 0, 0, XCB_NONE);
-
-    XCBTitleBar *titleBar = (XCBTitleBar *)[self childWindowForKey:TitleBar];
-    if (titleBar) {
-        xcb_shape_mask(conn, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_BOUNDING,
-                       [titleBar window], 0, 0, XCB_NONE);
-    }
-}
-
-- (void)applyRoundedCornersShapeMask
-{
-    // Query theme for corner radii - default to 0 (square corners) if not provided
-    GSTheme *theme = [GSTheme theme];
-    CGFloat topRadius = 0;
-    CGFloat bottomRadius = 0;
-
-    if ([theme respondsToSelector:@selector(titlebarCornerRadius)]) {
-        topRadius = [theme titlebarCornerRadius];
-    }
-
-    if ([theme respondsToSelector:@selector(windowBottomCornerRadius)]) {
-        bottomRadius = [theme windowBottomCornerRadius];
-    }
-
-    if (topRadius <= 0 && bottomRadius <= 0)
-        return;
-
-    // Use internal windowRect rather than a blocking xcb_get_geometry round-trip.
-    // The C resize functions always update windowRect via setWindowRect: before
-    // returning, so this is always current.
-    XCBRect frameRect = [self windowRect];
-    int fw = (int)frameRect.size.width;
-    int fh = (int)frameRect.size.height;
-    if (fw <= 0 || fh <= 0)
-        return;
-
-    // Check if compositor is active
-    Class compositorClass = NSClassFromString(@"URSCompositingManager");
-    BOOL compositorActive = NO;
-    if (compositorClass && [compositorClass respondsToSelector:@selector(sharedManager)]) {
-        id manager = [compositorClass sharedManager];
-        if ([manager respondsToSelector:@selector(compositingActive)]) {
-            compositorActive = [manager compositingActive];
-        }
-    }
-
-    // Apply bounding-shape to the FRAME window (always needed in non-compositor mode)
-    if (!compositorActive) {
-        XCBShape *shape = [[XCBShape alloc] initWithConnection:connection withWinId:window];
-        if ([shape checkSupported]) {
-            shape.width = fw;
-            shape.height = fh;
-            shape.borderWidth = 0;
-            shape.orWidth = fw;
-            shape.orHeight = fh;
-            [shape createPixmapsAndGCs];
-            [shape createRoundedCornersWithTopRadius:(int)topRadius bottomRadius:(int)bottomRadius];
-        }
-        shape = nil;
-    }
-
-    // In NON-compositor mode only: apply XShape to titlebar.
-    // In compositor mode, URSThemeIntegration.m handles rounded corners via ARGB alpha blending.
-    // XShape in compositor mode causes the initial-map sharp-corners issue and is not needed.
-    if (topRadius > 0 && !compositorActive) {
-        XCBTitleBar *titleBar = (XCBTitleBar *)[self childWindowForKey:TitleBar];
-        if (titleBar) {
-            int th = (int)titleHeight;  // titlebar height = the band above client
-            XCBShape *tbShape = [[XCBShape alloc] initWithConnection:connection
-                                                             withWinId:[titleBar window]];
-            if ([tbShape checkSupported]) {
-                tbShape.width = fw;
-                tbShape.height = th;
-                tbShape.borderWidth = 0;
-                tbShape.orWidth = fw;
-                tbShape.orHeight = th;
-                [tbShape createPixmapsAndGCs];
-                [tbShape createTopArcsWithRadius:(int)topRadius];
-            }
-            tbShape = nil;
-            titleBar = nil;
         }
     }
 }
@@ -1120,13 +988,13 @@ void resizeFromBottomForEvent(xcb_motion_notify_event_t *anEvent,
 
     // Use signed arithmetic to prevent underflow when event_y is smaller than titlebar
     int32_t newFrameHeight = (int32_t)anEvent->event_y;
-    int32_t minFrameHeight = minH + titleBarHeight + cb;
+    int32_t minFrameHeight = minH + titleBarHeight + [frame bottomBorder];
 
     // Clamp to minimum
     if (newFrameHeight < minFrameHeight)
         newFrameHeight = minFrameHeight;
 
-    int32_t newClientHeight = newFrameHeight - titleBarHeight - cb;
+    int32_t newClientHeight = newFrameHeight - titleBarHeight - [frame bottomBorder];
     if (newClientHeight < minH)
         newClientHeight = minH;
 
@@ -1198,7 +1066,7 @@ void resizeFromTopForEvent(xcb_motion_notify_event_t *anEvent,
 
     int32_t yDelta = (int32_t)rect.position.y - (int32_t)newY;
     int32_t newFrameHeight = (int32_t)rect.size.height + yDelta;
-    int32_t minFrameHeight = minH + titleBarHeight + cb;
+    int32_t minFrameHeight = minH + titleBarHeight + [frame bottomBorder];
 
     // Clamp: if the new height is below minimum, fix the top position
     if (newFrameHeight < minFrameHeight) {
@@ -1208,7 +1076,7 @@ void resizeFromTopForEvent(xcb_motion_notify_event_t *anEvent,
         newFrameHeight = minFrameHeight;
     }
 
-    int32_t newClientHeight = newFrameHeight - titleBarHeight - cb;
+    int32_t newClientHeight = newFrameHeight - titleBarHeight - [frame bottomBorder];
     if (newClientHeight < minH)
         newClientHeight = minH;
 
@@ -1283,14 +1151,14 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
     // Clamp to minimum dimensions
     int32_t minimumClientWidth = (minW < 1) ? 1 : minW;
     int32_t minimumFrameWidth = minimumClientWidth + 2 * cb;
-    int32_t minFrameHeight = minH + titleBarHeight + cb;
+    int32_t minFrameHeight = minH + titleBarHeight + [frame bottomBorder];
     if (newFrameWidth < minimumFrameWidth)
         newFrameWidth = minimumFrameWidth;
     if (newFrameHeight < minFrameHeight)
         newFrameHeight = minFrameHeight;
 
     int32_t newClientWidth = newFrameWidth - 2 * cb;
-    int32_t newClientHeight = newFrameHeight - titleBarHeight - cb;
+    int32_t newClientHeight = newFrameHeight - titleBarHeight - [frame bottomBorder];
     if (newClientWidth < minimumClientWidth) newClientWidth = minimumClientWidth;
     if (newClientHeight < 1) newClientHeight = 1;
 
@@ -1359,8 +1227,7 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
     // Use cached in-memory rects — no blocking xcb_get_geometry round-trip.
     XCBRect rect = [self windowRect];
     XCBRect clientRect = [clientWindow windowRect];
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-    uint16_t height = [settings heightDefined] ? [settings height] : [settings defaultHeight];
+    uint16_t height = titleHeight;
 
     /*** synthetic event: coordinates must be in root space. ***/
 
@@ -1381,7 +1248,6 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
     [clientWindow setWindowRect:clientRect];
 
     clientWindow = nil;
-    settings = nil;
 }
 
 - (void)configureClientWithFramePosition:(XCBPoint)framePos
@@ -1390,8 +1256,7 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
     XCBWindow *clientWindow = [self childWindowForKey:ClientWindow];
     if (!clientWindow) return;
 
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-    uint16_t titleHgt = [settings heightDefined] ? [settings height] : [settings defaultHeight];
+    uint16_t titleHgt = titleHeight;
 
     // Use the static helper with explicit dimensions (same as manual resize)
     sendSyntheticConfigureNotify([connection connection], clientWindow,
@@ -1401,7 +1266,6 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
                                   clientSize.height);
 
     clientWindow = nil;
-    settings = nil;
 }
 
 - (void)programmaticResizeToRect:(XCBRect)targetRect
@@ -1418,16 +1282,16 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
 
     xcb_connection_t *conn = [connection connection];
 
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-    uint16_t titleHgt = [settings heightDefined] ? [settings height] : [settings defaultHeight];
+    uint16_t titleHgt = titleHeight;
 
     // Calculate child window dimensions (same as manual resize functions)
     XCBRect titleBarRect = XCBMakeRect(XCBMakePoint(0, 0),
                                         XCBMakeSize(targetRect.size.width, titleHgt));
-    // Client fills frame below titlebar with 1px border on left, right, and bottom
-    XCBRect clientRect = XCBMakeRect(XCBMakePoint(1, titleHgt),
-                                      XCBMakeSize(targetRect.size.width - 2,
-                                                   targetRect.size.height - titleHgt - 1));
+    // Client fills frame between titlebar and resize bar, inset by the border
+    int cb = self.clientBorder;
+    XCBRect clientRect = XCBMakeRect(XCBMakePoint(cb, titleHgt),
+                                      XCBMakeSize(targetRect.size.width - 2 * cb,
+                                                   targetRect.size.height - titleHgt - self.bottomBorder));
 
     // Configure frame window (position + size)
     uint32_t frameValues[4] = {(uint32_t)targetRect.position.x, (uint32_t)targetRect.position.y,
@@ -1471,7 +1335,6 @@ void resizeFromAngleForEvent(xcb_motion_notify_event_t *anEvent,
                                   clientRect.size.width,
                                   clientRect.size.height);
 
-    settings = nil;
 }
 
 - (MousePosition) mouseIsOnWindowBorderForEvent:(xcb_motion_notify_event_t *)anEvent

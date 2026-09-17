@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, childrenMask)
     TitleBar = 0,
     ClientWindow = 1,
     ResizeHandle = 2,    // Legacy (keep for backwards compatibility)
+    ResizeBar = 3,       // Theme-drawn resize bar along the bottom edge
     ResizeZoneNW = 10,
     ResizeZoneN = 11,
     ResizeZoneNE = 12,
@@ -46,13 +47,19 @@ typedef NS_ENUM(NSInteger, childrenMask)
 @property (nonatomic, assign) int minWidthHint;
 @property (nonatomic, assign) uint16_t titleHeight;
 @property (strong, nonatomic) XCBConnection *connection;
-// clientBorder: pixels inset around the client area (1 = thin border, 0 = flush in compositor mode)
+// clientBorder: left/right inset of the client area (theme window border)
 @property (nonatomic, assign) int clientBorder;
+// bottomBorder: bottom inset of the client area (theme resize bar, or border)
+@property (nonatomic, assign) int bottomBorder;
 @property (nonatomic, assign) BOOL rightBorderClicked;
 @property (nonatomic, assign) BOOL bottomBorderClicked;
 @property (nonatomic, assign) BOOL leftBorderClicked;
 @property (nonatomic, assign) BOOL topBorderClicked;
 @property (nonatomic, assign) XCBPoint offset;
+// NSWindow style mask used for decorations (titled/closable/miniaturizable/resizable)
+@property (nonatomic, assign) NSUInteger decorationStyleMask;
+// Client reports unsaved changes (_GNUSTEP_WM_ATTR GSDocumentEditedFlag)
+@property (nonatomic, assign) BOOL documentEdited;
 
 - (id) initWithClientWindow:(XCBWindow*) aClientWindow withConnection:(XCBConnection*) aConnection;
 - (id) initWithClientWindow:(XCBWindow*) aClientWindow
@@ -69,17 +76,16 @@ typedef NS_ENUM(NSInteger, childrenMask)
 - (void) configureClientWithFramePosition:(XCBPoint)framePos clientSize:(XCBSize)clientSize;
 - (MousePosition) mouseIsOnWindowBorderForEvent:(xcb_motion_notify_event_t *)anEvent;
 - (void) restoreDimensionAndPosition;
-- (void) createResizeHandle;
-- (void) updateResizeHandlePosition;
 - (void) raiseResizeHandle;
-- (void) applyRoundedCornersShapeMask;
-- (void) clearShapeMasks;
 - (void) programmaticResizeToRect:(XCBRect)targetRect;
 
-// Theme-driven resize zones
+// Resize bar and its resize zones (GSTheme resize bar)
 - (void) createResizeZonesFromTheme;
+// Lay out the resize bar and zones for the current frame size (redraws the bar if its width changed)
 - (void) updateAllResizeZonePositions;
 - (void) destroyResizeZones;
+// Redraw the resize bar with the active theme
+- (void) renderResizeBar;
 
 
  /********************************
@@ -91,5 +97,14 @@ typedef NS_ENUM(NSInteger, childrenMask)
 - (void) setChildren:(NSMutableDictionary*) aChildrenSet;
 - (NSMutableDictionary*) getChildren;
 - (void) decorateClientWindow;
+
+// Re-read the client's decoration style (_GNUSTEP_WM_ATTR for GNUstep apps,
+// ICCCM/EWMH hints otherwise). Returns YES if the style or edited state changed.
+- (BOOL) updateDecorationStyleFromClient;
+
+// Decoration style for a client that may not be framed yet
++ (NSUInteger) decorationStyleMaskForClient:(XCBWindow*)aClient
+                                 connection:(XCBConnection*)aConnection
+                             documentEdited:(BOOL*)edited;
 
 @end

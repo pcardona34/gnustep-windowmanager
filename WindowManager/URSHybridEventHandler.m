@@ -34,7 +34,7 @@
 #import "ICCCMService.h"
 #import "XCBFrame.h"
 #import "URSThemeIntegration.h"
-#import "GSThemeTitleBar.h"
+#import "URSDecorationMetrics.h"
 #import "URSWindowSwitcher.h"
 
 @implementation URSHybridEventHandler
@@ -123,6 +123,17 @@
         [NSApp terminate:nil];
         return;
     }
+
+    // Redraw all decorations when the user switches GSTheme. The Themes
+    // preference pane announces changes with a distributed notification.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidActivate:)
+                                                 name:GSThemeDidActivateNotification
+                                               object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self
+                                                        selector:@selector(themePreferenceDidChange:)
+                                                            name:@"GSThemePreferenceDidChangeNotification"
+                                                          object:nil];
 
     // Wire selectionManagerWindow into the focus manager now that it exists
     self.focusManager.selectionManagerWindow = self.selectionManagerWindow;
@@ -735,6 +746,11 @@
                 break;
             }
 
+            // Title bar buttons act on release
+            if ([self.titlebarController handleTitlebarButtonRelease:releaseEvent]) {
+                break;
+            }
+
             // Let xcbkit handle the release first
             [connection handleButtonRelease:releaseEvent];
             // After resize completes, update the titlebar with GSTheme
@@ -1186,29 +1202,6 @@
 
 #pragma mark - GSTheme Integration (NEW)
 
-- (void)handleWindowCreated:(XCBTitleBar*)titlebar {
-    if (!titlebar) {
-        return;
-    }
-
-    //NSLog(@"GSTheme: Applying theme to new titlebar for window: %@", titlebar.windowTitle);
-
-    // Register with theme integration
-    [[URSThemeIntegration sharedInstance] handleWindowCreated:titlebar];
-
-    // Newly mapped windows almost always become the active (focused) window,
-    // so render them as active immediately.  If they don't actually get focus,
-    // the next FocusIn event will correct them.
-    //BOOL success = [URSThemeIntegration renderGSThemeTitlebar:titlebar
-    //                                                    title:titlebar.windowTitle
-    //                                                   active:YES];
-
-    //if (!success) {
-        //NSLog(@"GSTheme rendering failed for titlebar, falling back to default titlebar path");
-        // XCBTitleBar will fall back to its default titlebar rendering
-    //}
-}
-
 - (void)handleFocusChange:(xcb_window_t)windowId isActive:(BOOL)isActive {
     @try {
         // When any window gains focus, IMMEDIATELY mark the previously-focused
@@ -1353,115 +1346,78 @@
     }
 }
 
-- (void)handleWindowFocusChanged:(XCBTitleBar*)titlebar isActive:(BOOL)active {
-    if (!titlebar) {
-        return;
+- (void)themePreferenceDidChange:(NSNotification *)notification {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults synchronize];
+
+    NSString *name = [defaults stringForKey:@"GSTheme"];
+    if ([name length] == 0) {
+        name = @"GNUstep";
+    } else if ([[name pathExtension] isEqualToString:@"theme"]) {
+        name = [name stringByDeletingPathExtension];
     }
+    NSLog(@"[WindowManager] Theme preference changed to '%@' (active: '%@')",
+          name, [[GSTheme theme] name]);
 
-    //NSLog(@"GSTheme: Focus changed for window %@ (active: %d)", titlebar.windowTitle, active);
+    // Same rule as +[GSTheme defaultsDidChange:]; setTheme: posts
+    // GSThemeDidActivateNotification, which redraws all decorations.
+    if (![[name lastPathComponent] isEqualToString:[[GSTheme theme] name]]) {
+        [GSTheme setTheme:[GSTheme loadThemeNamed:name]];
+    }
+}
 
-    // Update theme integration
-    [[URSThemeIntegration sharedInstance] handleWindowFocusChanged:titlebar isActive:active];
-
-    // Re-render with new focus state
-    [URSThemeIntegration renderGSThemeTitlebar:titlebar
-                                         title:titlebar.windowTitle
-                                        active:active];
+- (void)themeDidActivate:(NSNotification *)notification {
+    NSLog(@"[WindowManager] GSTheme '%@' activated; redrawing decorations (zoom image: %d, stock close image: %d)",
+          [[GSTheme theme] name],
+          [URSDecorationMetrics themeProvidesImageNamed:@"common_Zoom"],
+          [URSDecorationMetrics themeProvidesImageNamed:@"common_Close"]);
+    // TODO: themes with code can change title/resize bar heights; existing
+    // frames keep the geometry they were created with.
+    // Redraw on the next run loop pass so NSColor and friends have processed
+    // the same notification and report the new theme's values.
+    [self performSelector:@selector(refreshAllManagedWindows) withObject:nil afterDelay:0];
 }
 
 - (void)refreshAllManagedWindows {
-    //NSLog(@"GSTheme: Refreshing all managed windows with current theme");
     xcb_window_t focusedId = self.focusManager.lastFocusedWindowId;
-    [URSThemeIntegration refreshAllTitlebarsWithFocusedWindow:focusedId];
-}
-
-- (void)handleMapRequestWithGSTheme:(xcb_map_request_event_t*)mapRequestEvent {
-    @try {
-        //NSLog(@"Intercepting map request for window %u - using GSTheme-only decoration", mapRequestEvent->window);
-
-        // Let XCBConnection handle the map request BUT don't let it decorate with XCBKit
-        // We need to duplicate XCBConnection's handleMapRequest logic but skip the decorateClientWindow call
-
-        xcb_window_t requestWindow = mapRequestEvent->window;
-
-        // Get window geometry
-        xcb_get_geometry_cookie_t geom_cookie = xcb_get_geometry([connection connection], requestWindow);
-        xcb_get_geometry_reply_t *geom_reply = xcb_get_geometry_reply([connection connection], geom_cookie, NULL);
-
-        if (geom_reply) {
-            //NSLog(@"Window geometry: %dx%d at %d,%d", geom_reply->width, geom_reply->height, geom_reply->x, geom_reply->y);
-
-            // Create frame without XCBKit titlebar decoration
-            XCBWindow *clientWindow = [connection windowForXCBId:requestWindow];
-            if (!clientWindow) {
-                // Create a basic client window object
-                clientWindow = [[XCBWindow alloc] init];
-                [clientWindow setWindow:requestWindow];
-                [clientWindow setConnection:connection];
-                [connection registerWindow:clientWindow];
-            }
-
-            // Create frame for the window (this will create the structure but we'll handle decoration)
-            XCBFrame *frame = [[XCBFrame alloc] initWithClientWindow:clientWindow withConnection:connection];
-
-            //NSLog(@"Created frame for client window, will apply GSTheme-only decoration");
-
-            // Map the frame and client window
-            [connection mapWindow:frame];
-            [connection registerWindow:clientWindow];
-
-            // Apply ONLY GSTheme decoration (no XCBKit titlebar drawing)
-            [self performSelector:@selector(applyGSThemeOnlyDecoration:)
-                       withObject:frame
-                       afterDelay:0.1]; // Short delay to let frame be fully mapped
-
-            free(geom_reply);
-        } else {
-            NSLog(@"Failed to get geometry for window %u, falling back to normal handling", requestWindow);
-            // Fallback to normal XCBConnection handling
-            [connection handleMapRequest:mapRequestEvent];
+    NSDictionary *windowsMap = [connection windowsMap];
+    for (NSString *mapWindowId in windowsMap) {
+        XCBWindow *mapWindow = [windowsMap objectForKey:mapWindowId];
+        if (![mapWindow isKindOfClass:[XCBFrame class]]) {
+            continue;
         }
-
-    } @catch (NSException *exception) {
-        NSLog(@"Exception in GSTheme map request handler: %@", exception.reason);
-        // Fallback to normal handling
-        [connection handleMapRequest:mapRequestEvent];
-    }
-}
-
-- (void)applyGSThemeOnlyDecoration:(XCBFrame*)frame {
-    @try {
-        //NSLog(@"Applying GSTheme-only decoration to frame");
-
-        // Get the titlebar from the frame
+        XCBFrame *frame = (XCBFrame *)mapWindow;
         XCBWindow *titlebarWindow = [frame childWindowForKey:TitleBar];
-        if (titlebarWindow && [titlebarWindow isKindOfClass:[XCBTitleBar class]]) {
-            XCBTitleBar *titlebar = (XCBTitleBar*)titlebarWindow;
-
-            // Apply ONLY GSTheme rendering (no legacy/XCBKit drawing).
-            // Newly mapped windows almost always get focus, so default active.
-            BOOL success = [URSThemeIntegration renderGSThemeToWindow:frame
-                                                                frame:frame
-                                                                title:titlebar.windowTitle
-                                                               active:YES];
-
-            if (success) {
-                //NSLog(@"GSTheme-only decoration applied successfully");
-
-                // Add to managed list
-                URSThemeIntegration *integration = [URSThemeIntegration sharedInstance];
-                if (![integration.managedTitlebars containsObject:titlebar]) {
-                    [integration.managedTitlebars addObject:titlebar];
-                }
-            } else {
-                //NSLog(@"GSTheme-only decoration failed");
-            }
-        } else {
-            //NSLog(@"No titlebar found in frame for GSTheme decoration");
+        if (![titlebarWindow isKindOfClass:[XCBTitleBar class]]) {
+            continue;
         }
+        XCBTitleBar *titlebar = (XCBTitleBar *)titlebarWindow;
+        XCBWindow *clientWindow = [frame childWindowForKey:ClientWindow];
+        BOOL isActive = (focusedId != XCB_NONE && clientWindow != nil &&
+                         [clientWindow window] == focusedId);
+        uint32_t borderPixel = [URSDecorationMetrics borderPixel];
+        if (![frame use32BitDepth])
+            borderPixel &= 0x00FFFFFF;
+        xcb_change_window_attributes([connection connection], [frame window],
+                                     XCB_CW_BACK_PIXEL, &borderPixel);
+        xcb_clear_area([connection connection], 0, [frame window], 0, 0, 0, 0);
 
-    } @catch (NSException *exception) {
-        NSLog(@"Exception applying GSTheme-only decoration: %@", exception.reason);
+        if ([URSThemeIntegration renderGSThemeToWindow:frame
+                                                 frame:frame
+                                                 title:[titlebar windowTitle]
+                                                active:isActive]) {
+            [titlebar putWindowBackgroundWithPixmap:[titlebar pixmap]];
+            [titlebar drawArea:[titlebar windowRect]];
+        }
+        [frame renderResizeBar];
+        if (self.compositingManager && [self.compositingManager compositingActive]) {
+            [self.compositingManager invalidateWindowPixmap:[frame window]];
+        }
+    }
+    [connection flush];
+    if (self.compositingManager && [self.compositingManager compositingActive]) {
+        [self.compositingManager markStackingOrderDirty];
+        [self.compositingManager performRepairNow];
     }
 }
 
@@ -1474,43 +1430,27 @@
 
         xcb_window_t exposedWindow = exposeEvent->window;
 
-        // Check if the exposed window is a titlebar we're managing
-        for (XCBTitleBar *titlebar in integration.managedTitlebars) {
-            if ([titlebar window] == exposedWindow) {
-                // This titlebar was exposed, re-apply GSTheme to override XCBKit redrawing
-                // Find the frame by checking the titlebar's parent window
-                XCBWindow *parentWindow = [titlebar parentWindow];
-                XCBFrame *frame = nil;
-                
-                if (parentWindow && [parentWindow isKindOfClass:[XCBFrame class]]) {
-                    frame = (XCBFrame*)parentWindow;
-                }
+        XCBWindow *exposed = [connection windowForXCBId:exposedWindow];
+        if (![exposed isKindOfClass:[XCBTitleBar class]] ||
+            ![[exposed parentWindow] isKindOfClass:[XCBFrame class]]) {
+            return;
+        }
+        XCBTitleBar *titlebar = (XCBTitleBar *)exposed;
+        XCBFrame *frame = (XCBFrame *)[titlebar parentWindow];
 
-                if (frame) {
-                    //NSLog(@"Titlebar %u exposed, re-applying GSTheme", exposedWindow);
+        XCBWindow *exposeClient = [frame childWindowForKey:ClientWindow];
+        BOOL exposeIsActive = (self.focusManager.lastFocusedWindowId != XCB_NONE &&
+                               exposeClient != nil &&
+                               [exposeClient window] == self.focusManager.lastFocusedWindowId);
 
-                    // Determine whether this window actually has keyboard focus
-                    XCBWindow *exposeClient = [frame childWindowForKey:ClientWindow];
-                    BOOL exposeIsActive = (self.focusManager.lastFocusedWindowId != XCB_NONE &&
-                                           exposeClient != nil &&
-                                           [exposeClient window] == self.focusManager.lastFocusedWindowId);
-
-                    // Re-apply GSTheme rendering to override the expose redraw
-                    BOOL exposeSuccess = [URSThemeIntegration renderGSThemeToWindow:frame
-                                                                             frame:frame
-                                                                             title:titlebar.windowTitle
-                                                                            active:exposeIsActive];
-
-                    // Draw the updated pixmap into the window backing store so the
-                    // compositor captures themed content (not blank) on its next paint.
-                    if (exposeSuccess) {
-                        [titlebar putWindowBackgroundWithPixmap:[titlebar pixmap]];
-                        [titlebar drawArea:[titlebar windowRect]];
-                    }
-                    // Compositor update is handled by the XCB_EXPOSE handler (updateWindow call)
-                }
-                break;
-            }
+        // Draw the pixmap into the window backing store so the compositor
+        // captures themed content on its next paint.
+        if ([URSThemeIntegration renderGSThemeToWindow:frame
+                                                 frame:frame
+                                                 title:titlebar.windowTitle
+                                                active:exposeIsActive]) {
+            [titlebar putWindowBackgroundWithPixmap:[titlebar pixmap]];
+            [titlebar drawArea:[titlebar windowRect]];
         }
     } @catch (NSException *exception) {
         NSLog(@"Exception in titlebar expose handler: %@", exception.reason);
@@ -1770,11 +1710,6 @@
                                                                             active:YES];
 
                         if (success) {
-                            // Add to managed list so we can handle expose events
-                            URSThemeIntegration *integration = [URSThemeIntegration sharedInstance];
-                            if (![integration.managedTitlebars containsObject:titlebar]) {
-                                [integration.managedTitlebars addObject:titlebar];
-                            }
 
                             //NSLog(@"Successfully applied GSTheme to titlebar for window %u: %@",
                                   //windowId, titlebar.windowTitle ?: @"(untitled)");
@@ -2511,8 +2446,9 @@
     BOOL isWmName = [atomName isEqualToString:[icccmService WMName]];
     BOOL isNetWmName = [atomName isEqualToString:[ewmhService EWMHWMName]];
     BOOL isNetWmVisibleName = [atomName isEqualToString:[ewmhService EWMHWMVisibleName]];
+    BOOL isGNUstepAttr = [atomName isEqualToString:[ewmhService GNUStepWmAttr]];
 
-    if (!isWmName && !isNetWmName && !isNetWmVisibleName) {
+    if (!isWmName && !isNetWmName && !isNetWmVisibleName && !isGNUstepAttr) {
         return;
     }
 
@@ -2564,11 +2500,20 @@
         return;
     }
 
-    NSString *newTitle = [self titleForClientWindow:(clientWindow ? clientWindow : eventWindow)];
+    if (isGNUstepAttr) {
+        // Style mask or document-edited state changed: redraw only if it matters
+        if (![frame updateDecorationStyleFromClient]) {
+            return;
+        }
+    }
+
+    NSString *newTitle = isGNUstepAttr
+        ? [titlebar windowTitle]
+        : [self titleForClientWindow:(clientWindow ? clientWindow : eventWindow)];
 
     [titlebar setInternalTitle:newTitle];
 
-    if ([titlebar isGSThemeActive] && [[URSThemeIntegration sharedInstance] enabled]) {
+    if ([[URSThemeIntegration sharedInstance] enabled]) {
         // Use the focus manager to determine active state — frame.isFocused
         // is never actually set anywhere, so it's always NO.
         XCBWindow *titleClient = [frame childWindowForKey:ClientWindow];

@@ -9,7 +9,7 @@
 #import "UROSWMApplication.h"
 #import "URSThemeIntegration.h"
 #import "XCBTypes.h"
-#import "TitleBarSettingsService.h"
+#import "URSDecorationMetrics.h"
 #import "URSProfiler.h"
 #import <signal.h>
 #import <string.h>
@@ -96,28 +96,8 @@ int main(int argc, const char * argv[])
         URSHybridEventHandler *hybridHandler = [[URSHybridEventHandler alloc] init];
         hybridHandler.compositingRequested = enableCompositing;
 
-        // Initialize TitleBar settings - height will be queried from GSTheme below (source: AppearanceMetrics.h)
-        TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-        XCBPoint closePosition = XCBMakePoint(3.5, 3.8);
-        XCBPoint minimizePosition = XCBMakePoint(3, 8);
-        XCBPoint maximizePosition = XCBMakePoint(3, 3);
-        [settings setClosePosition:closePosition];
-        [settings setMinimizePosition:minimizePosition];
-        [settings setMaximizePosition:maximizePosition];
-
-        // Initialize GSTheme for titlebar decorations
-        //NSLog(@"Initializing GSTheme titlebar integration...");
-        [URSThemeIntegration initializeGSTheme];
-        [URSThemeIntegration enableGSThemeTitleBars];
-
-        // Set titlebar height from theme (authoritative source: AppearanceMetrics.h in Eau theme)
-        {
-            GSTheme *theme = [GSTheme theme];
-            uint16_t themeHeight = [theme respondsToSelector:@selector(titlebarHeight)]
-                ? (uint16_t)[theme titlebarHeight]
-                : 22;
-            [settings setHeight:themeHeight];
-        }
+        // Decorations come from the active GSTheme ([GSTheme theme] loads the
+        // theme named by the GSTheme default); nothing to configure here.
 
         // Create custom NSApplication and set the prepared hybrid event handler
         [app setDelegate:hybridHandler];
