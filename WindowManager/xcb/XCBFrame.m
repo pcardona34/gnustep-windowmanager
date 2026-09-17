@@ -626,6 +626,87 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
     }
 }
 
+#pragma mark - Theme Relayout
+
+- (BOOL)relayoutForCurrentTheme
+{
+    uint16_t l, r, t, b;
+    [URSDecorationMetrics offsetsForStyleMask:self.decorationStyleMask
+                                         left:&l right:&r top:&t bottom:&b];
+    int oldL = self.clientBorder, oldT = titleHeight, oldB = self.bottomBorder;
+    if (l == oldL && t == oldT && b == oldB)
+        return NO;
+
+    XCBWindow *clientWindow = [self childWindowForKey:ClientWindow];
+    XCBTitleBar *titleBar = (XCBTitleBar *)[self childWindowForKey:TitleBar];
+    int dW = 2 * ((int)l - oldL);
+    int dH = ((int)t - oldT) + ((int)b - oldB);
+
+    titleHeight = t;
+    self.clientBorder = l;
+    self.bottomBorder = b;
+
+    // A saved pre-maximize rect restores to the same content size
+    XCBRect saved = [self oldRect];
+    if (FnCheckXCBRectIsValid(saved) && saved.size.width > 0 && saved.size.height > 0) {
+        saved.size.width = (uint16_t)MAX(1, (int)saved.size.width + dW);
+        saved.size.height = (uint16_t)MAX(1, (int)saved.size.height + dH);
+        [self setOldRect:saved];
+    }
+
+    if (!clientWindow || !titleBar)
+        return YES;
+
+    // Fullscreen hides the decorations; the stored offsets are used on restore
+    if ([self fullScreen] && ![self isMaximized])
+        return YES;
+
+    xcb_connection_t *conn = [connection connection];
+    XCBRect frameRect = [self windowRect];
+    XCBRect clientRect = [clientWindow windowRect];
+
+    if ([self isMaximized]) {
+        // Keep the frame filling the work area; the content absorbs the change
+        clientRect.size.width = (uint16_t)MAX(1, (int)frameRect.size.width - 2 * (int)l);
+        clientRect.size.height = (uint16_t)MAX(1, (int)frameRect.size.height - (int)t - (int)b);
+    } else {
+        // Keep the content size; the frame grows or shrinks around it
+        frameRect.size.width = (uint16_t)(clientRect.size.width + 2 * l);
+        frameRect.size.height = (uint16_t)(clientRect.size.height + t + b);
+        uint32_t frameValues[2] = {frameRect.size.width, frameRect.size.height};
+        xcb_configure_window(conn, window, XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,
+                             frameValues);
+        [self setWindowRect:frameRect];
+        [self setOriginalRect:frameRect];
+    }
+
+    XCBRect titleRect = XCBMakeRect(XCBMakePoint(0, 0), XCBMakeSize(frameRect.size.width, t));
+    uint32_t titleValues[4] = {0, 0, titleRect.size.width, titleRect.size.height};
+    xcb_configure_window(conn, [titleBar window],
+                         XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y |
+                         XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, titleValues);
+    [titleBar setWindowRect:titleRect];
+    [titleBar setOriginalRect:titleRect];
+
+    clientRect.position = XCBMakePoint(l, t);
+    uint32_t clientValues[4] = {l, t, clientRect.size.width, clientRect.size.height};
+    xcb_configure_window(conn, [clientWindow window],
+                         XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y |
+                         XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT, clientValues);
+    [clientWindow setWindowRect:clientRect];
+    [clientWindow setOriginalRect:clientRect];
+
+    // Tell the client where its content now is (root coordinates) and publish
+    // the new frame extents
+    sendSyntheticConfigureNotify(conn, clientWindow,
+                                 frameRect.position.x + l, frameRect.position.y + t,
+                                 clientRect.size.width, clientRect.size.height);
+    [[EWMHService sharedInstanceWithConnection:connection] updateNetFrameExtentsForWindow:clientWindow];
+
+    [self updateAllResizeZonePositions];
+    return YES;
+}
+
 #pragma mark - Corner Shape
 
 - (void)applyCornerShape
@@ -788,14 +869,16 @@ static xcb_visualid_t findARGBVisual(xcb_screen_t *screen, xcb_visualtype_t **ou
         XCBRect barRect = XCBMakeRect(XCBMakePoint(0, frameRect.size.height - self.bottomBorder),
                                       XCBMakeSize(frameRect.size.width, self.bottomBorder));
         XCBRect oldRect = [bar windowRect];
-        if (oldRect.position.y != barRect.position.y || oldRect.size.width != barRect.size.width) {
+        if (oldRect.position.y != barRect.position.y || oldRect.size.width != barRect.size.width ||
+            oldRect.size.height != barRect.size.height) {
             uint32_t values[3] = {(uint32_t)barRect.position.y, barRect.size.width, barRect.size.height};
             xcb_configure_window([connection connection], [bar window],
                                  XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,
                                  values);
             [bar setWindowRect:barRect];
         }
-        if ([bar pixmapSize].width != barRect.size.width)
+        if ([bar pixmapSize].width != barRect.size.width ||
+            [bar pixmapSize].height != barRect.size.height)
             [self renderResizeBar];
     }
 
