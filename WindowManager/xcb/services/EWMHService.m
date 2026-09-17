@@ -9,7 +9,7 @@
 #import "EWMHService.h"
 #import "Transformers.h"
 #import "EEwmh.h"
-#import "TitleBarSettingsService.h"
+#import "URSDecorationMetrics.h"
 #import "XCBTypes.h"
 #import <unistd.h>
 
@@ -626,27 +626,18 @@
 
 - (void) updateNetFrameExtentsForWindow:(XCBWindow *)aWindow
 {
-    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-    uint16_t titleHeight = [settings heightDefined] ? [settings height] : [settings defaultHeight];
+    // Offsets follow the theme and the client's decoration style
+    NSUInteger styleMask;
+    if ([[aWindow parentWindow] isKindOfClass:[XCBFrame class]])
+        styleMask = [(XCBFrame *)[aWindow parentWindow] decorationStyleMask];
+    else
+        styleMask = [XCBFrame decorationStyleMaskForClient:aWindow
+                                                connection:connection
+                                            documentEdited:NULL];
 
-    BOOL compositorActive = NO;
-    Class compositorClass = NSClassFromString(@"URSCompositingManager");
-    if (compositorClass && [compositorClass respondsToSelector:@selector(sharedManager)])
-    {
-        id<URSCompositingManaging> compositor = [compositorClass performSelector:@selector(sharedManager)];
-        if (compositor && [compositor respondsToSelector:@selector(compositingActive)] &&
-            [compositor compositingActive])
-        {
-            compositorActive = YES;
-        }
-    }
-
-    uint32_t cb = compositorActive ? 0 : 1;
-    uint32_t extents[4];
-    extents[0] = cb;              // left border
-    extents[1] = cb;              // right border
-    extents[2] = titleHeight;     // top (titlebar)
-    extents[3] = cb;              // bottom border
+    uint16_t l, r, t, b;
+    [URSDecorationMetrics offsetsForStyleMask:styleMask left:&l right:&r top:&t bottom:&b];
+    uint32_t extents[4] = {l, r, t, b};
 
     [self changePropertiesForWindow:aWindow
                            withMode:XCB_PROP_MODE_REPLACE
@@ -835,10 +826,6 @@
                 titleBar = (XCBTitleBar *) [frame childWindowForKey:TitleBar];
                 [frame stackAbove];
                 [connection restackDockWindowsAbove];
-                if (![titleBar isGSThemeActive]) {
-                    [titleBar drawTitleBarComponents];
-                    [connection drawAllTitleBarsExcept:titleBar];
-                }
                 frame = nil;
                 titleBar = nil;
             }
@@ -937,7 +924,6 @@
 
                         // Update resize zones and shape mask
                         [frame updateAllResizeZonePositions];
-                        [frame applyRoundedCornersShapeMask];
 
                         [titleBar drawTitleBarComponents];
                     }
@@ -1007,7 +993,6 @@
 
                         // Update resize zones and shape mask
                         [frame updateAllResizeZonePositions];
-                        [frame applyRoundedCornersShapeMask];
 
                         [titleBar drawTitleBarComponents];
                     }
@@ -1145,8 +1130,7 @@
                     // Resize titlebar back to full width (was set to 0x0 on
                     // fullscreen enter — it was never unmapped).
                     XCBTitleBar *titleBar = (XCBTitleBar *)[frame childWindowForKey:TitleBar];
-                    TitleBarSettingsService *settings = [TitleBarSettingsService sharedInstance];
-                    uint16_t titleHgt = [settings heightDefined] ? [settings height] : [settings defaultHeight];
+                    uint16_t titleHgt = [frame titleHeight];
                     {
                         uint32_t tvals[2] = {frameRect.size.width, titleHgt};
                         xcb_configure_window([connection connection], [titleBar window],
@@ -1158,7 +1142,7 @@
                     int cb = [frame clientBorder];
                     XCBRect clientRect = XCBMakeRect(XCBMakePoint(cb, titleHgt),
                                                       XCBMakeSize(frameRect.size.width - 2 * cb,
-                                                                   frameRect.size.height - titleHgt - cb));
+                                                                   frameRect.size.height - titleHgt - [frame bottomBorder]));
                     uint32_t cvals[4] = {(uint32_t)clientRect.position.x,
                                          (uint32_t)clientRect.position.y,
                                          clientRect.size.width,
@@ -1172,7 +1156,6 @@
                     // Recreate resize zones and shape mask
                     if ([clientWin canResize])
                         [frame createResizeZonesFromTheme];
-                    [frame applyRoundedCornersShapeMask];
 
                     [aWindow setFullScreen:NO];
                     [connection flush];

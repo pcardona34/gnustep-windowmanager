@@ -2,7 +2,8 @@
 //  URSThemeIntegration.h
 //  uroswm - GSTheme Window Decoration for Titlebars
 //
-//  Renders actual GSTheme window decorations for X11 titlebars to match AppKit appearance.
+//  Renders window decorations with the active GSTheme so X11 and AppKit
+//  windows look exactly like GNUstep's own window decorations.
 //
 
 #import <Foundation/Foundation.h>
@@ -11,61 +12,39 @@
 #import <xcb/xcb.h>
 #import "XCBTitleBar.h"
 #import "XCBFrame.h"
-#import "ETitleBarColor.h"
 
 @interface URSThemeIntegration : NSObject
 
 // Singleton access
 + (instancetype)sharedInstance;
 
-// GSTheme initialization and management
-+ (void)initializeGSTheme;
 + (GSTheme*)currentTheme;
 
-// Enable GSThemeTitleBar replacement for all XCBTitleBar instances
-+ (void)enableGSThemeTitleBars;
-
-// Main titlebar rendering with GSTheme decorations
-+ (BOOL)renderGSThemeTitlebar:(XCBTitleBar*)titlebar
-                        title:(NSString*)title
-                       active:(BOOL)isActive;
-
-// Standalone GSTheme titlebar rendering (bypasses XCBTitleBar entirely)
+// Render the frame's title bar with the active theme into its pixmaps
 + (BOOL)renderGSThemeToWindow:(XCBWindow*)window
                         frame:(XCBFrame*)frame
                         title:(NSString*)title
                        active:(BOOL)isActive;
 
-// Refresh all titlebars with current theme, using the given focused client window
-// to determine which titlebar should appear active.
-+ (void)refreshAllTitlebarsWithFocusedWindow:(xcb_window_t)focusedClientId;
-
-// Event handlers
-- (void)handleWindowCreated:(XCBTitleBar*)titlebar;
-- (void)handleWindowFocusChanged:(XCBTitleBar*)titlebar isActive:(BOOL)active;
+// Render the frame's resize bar with the active theme into its pixmaps
++ (BOOL)renderResizeBarForFrame:(XCBFrame*)frame;
 
 // Configuration
 @property (assign, nonatomic) BOOL enabled;
-@property (strong, nonatomic) NSMutableArray *managedTitlebars;
 
-// Fixed-size window tracking (for hiding buttons except close)
+// Fixed-size window tracking
 + (void)registerFixedSizeWindow:(xcb_window_t)windowId;
 + (void)unregisterFixedSizeWindow:(xcb_window_t)windowId;
 + (BOOL)isFixedSizeWindow:(xcb_window_t)windowId;
 
-// Hover state tracking for titlebar buttons
-+ (xcb_window_t)hoveredTitlebarWindow;
-+ (NSInteger)hoveredButtonIndex;
-+ (void)setHoveredTitlebar:(xcb_window_t)titlebarId buttonIndex:(NSInteger)buttonIdx;
-+ (void)clearHoverState;
-
-// Determine which button (if any) is at a given coordinate
-// Returns: 0=close, 1=mini, 2=zoom, -1=none
-// Side-by-side layout: Close (X) on left | title | Minimize (-) | Maximize (+) on right
-+ (NSInteger)buttonIndexAtX:(CGFloat)x forWidth:(CGFloat)width hasMaximize:(BOOL)hasMax;
-+ (NSInteger)buttonIndexAtX:(CGFloat)x y:(CGFloat)y forWidth:(CGFloat)width height:(CGFloat)height hasMaximize:(BOOL)hasMax;
-
-// Orb button style detection (reads EauTitleBarButtonStyle preference)
-+ (BOOL)isOrbButtonStyle;
+// Pressed title bar button tracking (button is an NSWindowButton, -1 = none).
+// The pressed button is drawn highlighted while the pointer is over it.
++ (xcb_window_t)pressedTitlebarWindow;
++ (NSInteger)pressedButton;
++ (BOOL)pressedButtonHighlighted;
++ (void)setPressedTitlebar:(xcb_window_t)titlebarId
+                    button:(NSInteger)button
+               highlighted:(BOOL)highlighted;
++ (void)clearPressedState;
 
 @end

@@ -430,7 +430,7 @@
             // Force titlebar to redraw
             if ([titlebarWindow isKindOfClass:[XCBTitleBar class]]) {
                 XCBTitleBar *titlebar = (XCBTitleBar *)titlebarWindow;
-                [titlebar drawTitleBarComponentsPixmaps];
+                [titlebar drawTitleBarComponents];
             }
         }
         
@@ -1093,11 +1093,6 @@
                 // Step 3: Update titlebar state and redraw all titlebars (same as handleButtonPress)
                 if (titleBar) {
                     [titleBar setIsAbove:YES];
-                    [titleBar setButtonsAbove:YES];
-                    if (![titleBar isGSThemeActive]) {
-                        [titleBar drawTitleBarComponents];
-                        [self.connection drawAllTitleBarsExcept:titleBar];
-                    }
                 }
                 
                 //NSLog(@"[WindowSwitcher] Window activation complete using XCBKit standard path");

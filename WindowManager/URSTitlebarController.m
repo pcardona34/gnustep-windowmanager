@@ -11,6 +11,7 @@
 #import "URSThemeIntegration.h"
 #import "URSCompositingManager.h"
 #import "URSFocusManager.h"
+#import "URSDecorationMetrics.h"
 
 @implementation URSTitlebarController
 
@@ -26,74 +27,40 @@
 
 #pragma mark - Button Hit Detection
 
-- (GSThemeTitleBarButton)buttonAtPoint:(NSPoint)point
-                          forTitlebar:(XCBTitleBar *)titlebar
+- (NSInteger)buttonAtPoint:(NSPoint)point
+               forTitlebar:(XCBTitleBar *)titlebar
 {
-    static const CGFloat ORB_SIZE = 15.0;
-    static const CGFloat ORB_PAD_LEFT = 10.5;
-    static const CGFloat ORB_SPACING = 4.0;
-
+    if (![[titlebar parentWindow] isKindOfClass:[XCBFrame class]]) {
+        return -1;
+    }
+    XCBFrame *frame = (XCBFrame *)[titlebar parentWindow];
     XCBRect titlebarRect = [titlebar windowRect];
-    CGFloat titlebarWidth = titlebarRect.size.width;
-    CGFloat titlebarHeight = titlebarRect.size.height;
+    NSSize size = NSMakeSize(titlebarRect.size.width, titlebarRect.size.height);
 
-    XCBFrame *frame = nil;
-    if ([[titlebar parentWindow] isKindOfClass:[XCBFrame class]]) {
-        frame = (XCBFrame *)[titlebar parentWindow];
+    return [URSDecorationMetrics buttonAtX11Point:point
+                                     titleBarSize:size
+                                        styleMask:[frame decorationStyleMask]];
+}
+
+// Pointer position relative to a title bar, for events delivered to another window
+- (NSPoint)point:(NSPoint)eventPoint
+      fromWindow:(xcb_window_t)eventWindow
+      toTitlebar:(xcb_window_t)titlebarId
+{
+    if (eventWindow == titlebarId) {
+        return eventPoint;
     }
-
-    XCBWindow *clientWindow = frame ? [frame childWindowForKey:ClientWindow] : nil;
-    xcb_window_t clientWindowId = clientWindow ? [clientWindow window] : 0;
-    BOOL isFixedSize = clientWindowId &&
-        [URSThemeIntegration isFixedSizeWindow:clientWindowId];
-    BOOL hasMaximize = !isFixedSize;
-
-    if ([URSThemeIntegration isOrbButtonStyle]) {
-        CGFloat buttonY = (titlebarHeight - ORB_SIZE) / 2.0;
-        CGFloat closeX = ORB_PAD_LEFT;
-        CGFloat miniX = closeX + ORB_SIZE + ORB_SPACING;
-        CGFloat zoomX = miniX + ORB_SIZE + ORB_SPACING;
-
-        if (NSPointInRect(point, NSMakeRect(closeX, buttonY, ORB_SIZE, ORB_SIZE))) {
-            return GSThemeTitleBarButtonClose;
-        }
-        if (NSPointInRect(point, NSMakeRect(miniX, buttonY, ORB_SIZE, ORB_SIZE))) {
-            return GSThemeTitleBarButtonMiniaturize;
-        }
-        if (hasMaximize &&
-            NSPointInRect(point, NSMakeRect(zoomX, buttonY, ORB_SIZE, ORB_SIZE))) {
-            return GSThemeTitleBarButtonZoom;
-        }
-
-        return GSThemeTitleBarButtonNone;
+    xcb_translate_coordinates_reply_t *reply =
+        xcb_translate_coordinates_reply([self.connection connection],
+            xcb_translate_coordinates([self.connection connection], eventWindow, titlebarId,
+                                      (int16_t)eventPoint.x, (int16_t)eventPoint.y),
+            NULL);
+    if (!reply) {
+        return NSMakePoint(-1, -1);
     }
-
-    // Edge layout: Close at left | title | Minimize | Maximize at right
-    if (NSPointInRect(point, NSMakeRect(0, 0, titlebarHeight, titlebarHeight))) {
-        return GSThemeTitleBarButtonClose;
-    }
-
-    if (hasMaximize) {
-        NSRect miniRect = NSMakeRect(titlebarWidth - 2 * titlebarHeight, 0,
-                                     titlebarHeight, titlebarHeight);
-        if (NSPointInRect(point, miniRect)) {
-            return GSThemeTitleBarButtonMiniaturize;
-        }
-
-        NSRect zoomRect = NSMakeRect(titlebarWidth - titlebarHeight, 0,
-                                     titlebarHeight, titlebarHeight);
-        if (NSPointInRect(point, zoomRect)) {
-            return GSThemeTitleBarButtonZoom;
-        }
-    } else {
-        NSRect miniRect = NSMakeRect(titlebarWidth - titlebarHeight, 0,
-                                     titlebarHeight, titlebarHeight);
-        if (NSPointInRect(point, miniRect)) {
-            return GSThemeTitleBarButtonMiniaturize;
-        }
-    }
-
-    return GSThemeTitleBarButtonNone;
+    NSPoint p = NSMakePoint(reply->dst_x, reply->dst_y);
+    free(reply);
+    return p;
 }
 
 #pragma mark - Button Press Handling
@@ -108,58 +75,29 @@
 
         XCBTitleBar *titlebar = (XCBTitleBar *)window;
 
-        // Right-click is handled by the tiling menu controller, not here
-        if (pressEvent->detail == 3) {
+        // Only the primary button operates title bar buttons; right-click is
+        // handled by the tiling menu controller.
+        if (pressEvent->detail != 1) {
             return NO;
         }
 
         NSPoint clickPoint = NSMakePoint(pressEvent->event_x, pressEvent->event_y);
-        GSThemeTitleBarButton button = [self buttonAtPoint:clickPoint
-                                             forTitlebar:titlebar];
-
-        if (button == GSThemeTitleBarButtonNone) {
+        NSInteger button = [self buttonAtPoint:clickPoint forTitlebar:titlebar];
+        if (button < 0) {
             return NO;
         }
 
-        // Release the implicit grab
+        // Release the implicit grab freeze; the release is still delivered to us
         xcb_allow_events([self.connection connection],
                          XCB_ALLOW_ASYNC_POINTER, pressEvent->time);
 
-        XCBFrame *frame = (XCBFrame *)[titlebar parentWindow];
-        if (!frame || ![frame isKindOfClass:[XCBFrame class]]) {
-            NSLog(@"GSTheme: Could not find frame for titlebar button action");
-            return NO;
-        }
+        [URSThemeIntegration setPressedTitlebar:[titlebar window]
+                                         button:button
+                                    highlighted:YES];
+        [self redrawTitlebar:titlebar inFrame:(XCBFrame *)[titlebar parentWindow]];
 
-        XCBWindow *clientWindow = [frame childWindowForKey:ClientWindow];
-
-        switch (button) {
-            case GSThemeTitleBarButtonClose:
-                if (clientWindow) {
-                    [clientWindow close];
-                    [frame setNeedDestroy:YES];
-                }
-                break;
-
-            case GSThemeTitleBarButtonMiniaturize:
-                [frame minimize];
-                break;
-
-            case GSThemeTitleBarButtonZoom:
-                [self handleZoomForFrame:frame
-                                titlebar:titlebar
-                            clientWindow:clientWindow];
-                break;
-
-            default:
-                return NO;
-        }
-
-        // Clean up grab/drag state
-        [titlebar ungrabPointer];
         self.connection.dragState = NO;
         self.connection.resizeState = NO;
-
         [self.connection flush];
         return YES;
 
@@ -167,6 +105,68 @@
         NSLog(@"Exception handling titlebar button press: %@", exception.reason);
         return NO;
     }
+}
+
+- (BOOL)handleTitlebarButtonRelease:(xcb_button_release_event_t *)releaseEvent
+{
+    xcb_window_t titlebarId = [URSThemeIntegration pressedTitlebarWindow];
+    if (titlebarId == 0) {
+        return NO;
+    }
+    NSInteger button = [URSThemeIntegration pressedButton];
+    [URSThemeIntegration clearPressedState];
+
+    @try {
+        XCBWindow *window = [self.connection windowForXCBId:titlebarId];
+        if (!window || ![window isKindOfClass:[XCBTitleBar class]]) {
+            return YES;
+        }
+        XCBTitleBar *titlebar = (XCBTitleBar *)window;
+        XCBFrame *frame = (XCBFrame *)[titlebar parentWindow];
+        if (!frame || ![frame isKindOfClass:[XCBFrame class]]) {
+            return YES;
+        }
+
+        NSPoint p = [self point:NSMakePoint(releaseEvent->event_x, releaseEvent->event_y)
+                     fromWindow:releaseEvent->event
+                     toTitlebar:titlebarId];
+        BOOL inside = ([self buttonAtPoint:p forTitlebar:titlebar] == button);
+
+        // Remove the highlight before acting (the window may go away)
+        [self redrawTitlebar:titlebar inFrame:frame];
+
+        if (!inside) {
+            return YES;
+        }
+
+        XCBWindow *clientWindow = [frame childWindowForKey:ClientWindow];
+        switch (button) {
+            case NSWindowCloseButton:
+                if (clientWindow) {
+                    [clientWindow close];
+                    [frame setNeedDestroy:YES];
+                }
+                break;
+
+            case NSWindowMiniaturizeButton:
+                [frame minimize];
+                break;
+
+            case NSWindowZoomButton:
+                [self handleZoomForFrame:frame
+                                titlebar:titlebar
+                            clientWindow:clientWindow];
+                break;
+
+            default:
+                break;
+        }
+
+        [self.connection flush];
+    } @catch (NSException *exception) {
+        NSLog(@"Exception handling titlebar button release: %@", exception.reason);
+    }
+    return YES;
 }
 
 - (void)handleZoomForFrame:(XCBFrame *)frame
@@ -199,7 +199,6 @@
         [titlebar drawArea:[titlebar windowRect]];
 
         [frame updateAllResizeZonePositions];
-        [frame applyRoundedCornersShapeMask];
 
         [self animateTransition:frame
                        fromRect:startRect
@@ -242,7 +241,6 @@
         [titlebar drawArea:[titlebar windowRect]];
 
         [frame updateAllResizeZonePositions];
-        [frame applyRoundedCornersShapeMask];
 
         [self animateTransition:frame
                        fromRect:startRect
@@ -275,74 +273,39 @@
     }
 }
 
-#pragma mark - Hover Handling
+#pragma mark - Pressed Button Tracking
 
 - (void)handleHoverDuringMotion:(xcb_motion_notify_event_t *)motionEvent
 {
     URS_PROFILE_BEGIN(titlebarHover);
     @try {
-        if ([self.connection dragState] || [self.connection resizeState]) {
+        xcb_window_t titlebarId = [URSThemeIntegration pressedTitlebarWindow];
+        if (titlebarId == 0) {
             return;
         }
 
-        XCBWindow *window = [self.connection windowForXCBId:motionEvent->event];
-        if (!window) return;
-
-        if (![window isKindOfClass:[XCBTitleBar class]]) {
-            if ([URSThemeIntegration hoveredTitlebarWindow] != 0) {
-                xcb_window_t prevTitlebar =
-                    [URSThemeIntegration hoveredTitlebarWindow];
-                [URSThemeIntegration clearHoverState];
-                [self redrawTitlebarById:prevTitlebar];
-            }
+        XCBWindow *window = [self.connection windowForXCBId:titlebarId];
+        if (!window || ![window isKindOfClass:[XCBTitleBar class]]) {
+            [URSThemeIntegration clearPressedState];
             return;
         }
-
         XCBTitleBar *titlebar = (XCBTitleBar *)window;
-        xcb_window_t titlebarId = [titlebar window];
-        XCBFrame *frame = (XCBFrame *)[titlebar parentWindow];
-        if (!frame) return;
 
-        // Reset cursor to normal arrow when over titlebar
-        if (![[frame cursor] leftPointerSelected]) {
-            [frame showLeftPointerCursor];
-        }
+        NSPoint p = [self point:NSMakePoint(motionEvent->event_x, motionEvent->event_y)
+                     fromWindow:motionEvent->event
+                     toTitlebar:titlebarId];
+        NSInteger button = [URSThemeIntegration pressedButton];
+        BOOL highlighted = ([self buttonAtPoint:p forTitlebar:titlebar] == button);
 
-        XCBRect frameRect = [frame windowRect];
-        XCBRect titlebarRect = [titlebar windowRect];
-        CGFloat titlebarWidth = frameRect.size.width;
-        CGFloat titlebarHeight = titlebarRect.size.height;
-
-        XCBWindow *clientWindow = [frame childWindowForKey:ClientWindow];
-        xcb_window_t clientWindowId = clientWindow ? [clientWindow window] : 0;
-        BOOL hasMaximize = clientWindowId ?
-            ![URSThemeIntegration isFixedSizeWindow:clientWindowId] : YES;
-
-        CGFloat mouseX = motionEvent->event_x;
-        CGFloat mouseY = motionEvent->event_y;
-        NSInteger newButtonIndex =
-            [URSThemeIntegration buttonIndexAtX:mouseX
-                                              y:mouseY
-                                       forWidth:titlebarWidth
-                                         height:titlebarHeight
-                                    hasMaximize:hasMaximize];
-
-        xcb_window_t prevTitlebar = [URSThemeIntegration hoveredTitlebarWindow];
-        NSInteger prevButtonIndex = [URSThemeIntegration hoveredButtonIndex];
-
-        if (titlebarId != prevTitlebar || newButtonIndex != prevButtonIndex) {
-            [URSThemeIntegration setHoveredTitlebar:titlebarId
-                                        buttonIndex:newButtonIndex];
-
-            [self redrawTitlebar:titlebar inFrame:frame];
-
-            if (prevTitlebar != 0 && prevTitlebar != titlebarId) {
-                [self redrawTitlebarById:prevTitlebar];
-            }
+        if (highlighted != [URSThemeIntegration pressedButtonHighlighted]) {
+            [URSThemeIntegration setPressedTitlebar:titlebarId
+                                             button:button
+                                        highlighted:highlighted];
+            [self redrawTitlebar:titlebar inFrame:(XCBFrame *)[titlebar parentWindow]];
         }
 
     } @catch (NSException *exception) {
-        // Silently ignore exceptions during hover handling
+        // Silently ignore exceptions during motion handling
     }
     URS_PROFILE_END(titlebarHover);
 }
@@ -350,13 +313,13 @@
 - (void)handleTitlebarLeave:(xcb_leave_notify_event_t *)leaveEvent
 {
     @try {
-        xcb_window_t leavingWindow = leaveEvent->event;
-        xcb_window_t hoveredTitlebar =
-            [URSThemeIntegration hoveredTitlebarWindow];
-
-        if (leavingWindow == hoveredTitlebar && hoveredTitlebar != 0) {
-            [URSThemeIntegration clearHoverState];
-            [self redrawTitlebarById:leavingWindow];
+        xcb_window_t titlebarId = [URSThemeIntegration pressedTitlebarWindow];
+        if (titlebarId != 0 && leaveEvent->event == titlebarId &&
+            [URSThemeIntegration pressedButtonHighlighted]) {
+            [URSThemeIntegration setPressedTitlebar:titlebarId
+                                             button:[URSThemeIntegration pressedButton]
+                                        highlighted:NO];
+            [self redrawTitlebarById:titlebarId];
         }
     } @catch (NSException *exception) {
         // Silently ignore

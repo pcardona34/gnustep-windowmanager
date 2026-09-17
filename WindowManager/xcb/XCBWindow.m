@@ -17,7 +17,7 @@
 #import "ICCCMService.h"
 #import "EIcccm.h"
 #import "Transformers.h"
-#import "TitleBarSettingsService.h"
+#import "URSDecorationMetrics.h"
 #import <AppKit/NSAlert.h>
 
 #define BUTTONMASK  (XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE)
@@ -1159,9 +1159,9 @@
 
     XCBFrame *frame = (XCBFrame*)parentWindow;
     XCBRect frameRect = [frame windowRect];//[[frame geometries] rect];
-    TitleBarSettingsService *settingsService = [TitleBarSettingsService sharedInstance];
-    int titleHeight = [settingsService heightDefined] ? [settingsService height] : [settingsService defaultHeight];
+    int titleHeight = [frame titleHeight];
     int cb = [frame clientBorder];
+    int bb = [frame bottomBorder];
 
     /*** Handle windows we manage ***/
 
@@ -1205,9 +1205,9 @@
         if ([self canResize]) {
             config_frame_mask |= XCB_CONFIG_WINDOW_HEIGHT;
             config_win_mask |= XCB_CONFIG_WINDOW_HEIGHT;
-            config_frame_vals[frame_i++] = anEvent->height + titleHeight + cb;
+            config_frame_vals[frame_i++] = anEvent->height + titleHeight + bb;
             config_win_vals[win_i++] = anEvent->height;
-            frameRect.size.height = anEvent->height + titleHeight + cb;
+            frameRect.size.height = anEvent->height + titleHeight + bb;
         } else {
             //NSDebugLog(@"Ignoring height change request in ConfigureRequest for non-resizable window %u", window);
         }
@@ -1252,7 +1252,6 @@
     xcb_flush([connection connection]);
     [frame setOriginalRect:frameRect];
     [frame updateAllResizeZonePositions];
-    [frame applyRoundedCornersShapeMask];
 
     [titleBar updateRectsFromGeometries];
     //[titleBar drawTitleBarComponents]; FIXME: why this draw here?

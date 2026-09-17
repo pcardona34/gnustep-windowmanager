@@ -61,8 +61,6 @@
 - (void)processXCBEvent:(xcb_generic_event_t *)event;
 
 // GSTheme integration
-- (void)handleWindowCreated:(XCBTitleBar *)titlebar;
-- (void)handleWindowFocusChanged:(XCBTitleBar *)titlebar isActive:(BOOL)active;
 - (void)refreshAllManagedWindows;
 
 // Spatial path popup (modifier+click on titlebar with _GW_SPATIAL_PATH)

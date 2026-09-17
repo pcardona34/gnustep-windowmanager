@@ -140,16 +140,24 @@
     memset(&property, 0, sizeof(property));
 
     xcb_generic_error_t *error = NULL;
-    xcb_icccm_get_wm_name_reply(conn, cookie, &property, &error);
-    if (error)
+    if (!xcb_icccm_get_wm_name_reply(conn, cookie, &property, &error))
     {
-        free(error);
+        if (error)
+            free(error);
         return nil;
     }
 
+    // Text properties are not NUL-terminated; honour name_len.
+    // STRING is Latin-1; UTF8_STRING is used by some clients.
     NSString *name = nil;
-    if (property.name != NULL)
-        name = [NSString stringWithCString:property.name encoding:NSASCIIStringEncoding];
+    if (property.name != NULL && property.name_len > 0)
+    {
+        NSData *bytes = [NSData dataWithBytes:property.name length:property.name_len];
+        name = [[NSString alloc] initWithData:bytes encoding:NSUTF8StringEncoding];
+        if (name == nil)
+            name = [[NSString alloc] initWithData:bytes encoding:NSISOLatin1StringEncoding];
+    }
+    xcb_icccm_get_text_property_reply_wipe(&property);
 
     return name;
 }

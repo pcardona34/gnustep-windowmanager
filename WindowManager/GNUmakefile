@@ -30,7 +30,7 @@ $(APP_NAME)_OBJC_FILES = \
 		URSSnapPreviewOverlay.m \
 		URSThemeIntegration.m \
 		URSProfiler.m \
-		GSThemeTitleBar.m \
+		URSDecorationMetrics.m \
 		xcb/XCBConnection.m \
 		xcb/XCBWindow.m \
 		xcb/XCBFrame.m \
@@ -48,7 +48,6 @@ $(APP_NAME)_OBJC_FILES = \
 		xcb/services/EWMHService.m \
 		xcb/services/ICCCMService.m \
 		xcb/services/XCBAtomService.m \
-		xcb/services/TitleBarSettingsService.m \
 		xcb/utils/XCBCreateWindowTypeRequest.m \
 		xcb/utils/XCBWindowTypeResponse.m \
 		xcb/utils/Comparators.m \
@@ -69,7 +68,7 @@ $(APP_NAME)_HEADER_FILES = \
 		URSSnapPreviewOverlay.h \
 		URSThemeIntegration.h \
 		URSProfiler.h \
-		GSThemeTitleBar.h \
+		URSDecorationMetrics.h \
 		xcb/XCBConnection.h \
 		xcb/XCBWindow.h \
 		xcb/XCBFrame.h \
@@ -89,12 +88,10 @@ $(APP_NAME)_HEADER_FILES = \
 		xcb/enums/EIcccm.h \
 		xcb/enums/EMousePosition.h \
 		xcb/enums/EResizeDirection.h \
-		xcb/enums/ETitleBarColor.h \
 		xcb/enums/EXErrorMessages.h \
 		xcb/services/EWMHService.h \
 		xcb/services/ICCCMService.h \
 		xcb/services/XCBAtomService.h \
-		xcb/services/TitleBarSettingsService.h \
 		xcb/utils/XCBCreateWindowTypeRequest.h \
 		xcb/utils/XCBWindowTypeResponse.h \
 		xcb/utils/Comparators.h \
