@@ -18,6 +18,21 @@ To install WindowManager, you need XCBKit installed on your system.
 - xcb-icccm
 - gnustep-base
 
+#### On Debian Trixie (13.x) out of a Gershwin env
+
+- libxcb1-dev
+- libxcb1
+- libxcb-xfixes0
+- libxcb-icccm4
+- libxcb-icccm4-dev
+- libxcb-cursor-dev
+- libxcb-shape0-dev
+- libxcb-randr0-dev
+
+And of course
+- gnustep-base
+
+
 ### WindowManager Dependencies
 - XCBKit
 
@@ -61,6 +76,3 @@ Options:
 Distributions may set the `DISPLAY` environment variable differently based on their needs. For example:
 - On **Ubuntu**, you typically cannot use `DISPLAY=:1` because it's already used by X11. You would need to use `DISPLAY=:2` for Xephyr instead.
 - On other distributions you can usually use `:1`.
-
-
-

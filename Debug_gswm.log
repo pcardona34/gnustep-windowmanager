@@ -1,0 +1,1198 @@
+make -C WindowManager -f GNUmakefile
+make[1] : on entre dans le répertoire « /home/patrick/SOURCES/agnostep-desktop/build/gnustep-windowmanager/WindowManager »
+This is gnustep-make 2.9.3. Type 'gmake print-gnustep-make-help' for help.
+Running in gnustep-make version 2 strict mode.
+Making all for app WindowManager...
+ Compiling file main.m ...
+In file included from xcb/XCBWindow.h:11,
+                 from xcb/utils/XCBCreateWindowTypeRequest.h:10,
+                 from xcb/XCBConnection.h:12,
+                 from URSHybridEventHandler.h:14,
+                 from main.m:8:
+xcb/XCBGeometryReply.h:21:12: error: unknown property attribute ‘strong’
+   21 | @property (strong, nonatomic) XCBWindow *rootWindow;
+      |            ^~~~~~
+xcb/XCBGeometryReply.h:21:42: warning: object property ‘rootWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   21 | @property (strong, nonatomic) XCBWindow *rootWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBGeometryReply.h:21:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from xcb/XCBWindow.h:13:
+xcb/XCBQueryTreeReply.h:18:12: error: unknown property attribute ‘strong’
+   18 | @property (strong, nonatomic) XCBWindow *rootWindow;
+      |            ^~~~~~
+xcb/XCBQueryTreeReply.h:18:42: warning: object property ‘rootWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   18 | @property (strong, nonatomic) XCBWindow *rootWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBQueryTreeReply.h:18:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBQueryTreeReply.h:19:12: error: unknown property attribute ‘strong’
+   19 | @property (strong, nonatomic) XCBWindow *parentWindow;
+      |            ^~~~~~
+xcb/XCBQueryTreeReply.h:19:42: warning: object property ‘parentWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   19 | @property (strong, nonatomic) XCBWindow *parentWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+xcb/XCBQueryTreeReply.h:19:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from xcb/XCBWindow.h:17:
+xcb/XCBCursor.h:19:12: error: unknown property attribute ‘strong’
+   19 | @property (strong, nonatomic) XCBConnection *connection;
+      |            ^~~~~~
+xcb/XCBCursor.h:19:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   19 | @property (strong, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBCursor.h:19:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:20:12: error: unknown property attribute ‘strong’
+   20 | @property (strong, nonatomic) XCBScreen *screen;
+      |            ^~~~~~
+xcb/XCBCursor.h:20:42: warning: object property ‘screen’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   20 | @property (strong, nonatomic) XCBScreen *screen;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+xcb/XCBCursor.h:20:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:22:12: error: unknown property attribute ‘strong’
+   22 | @property (strong, nonatomic) NSString *cursorPath;
+      |            ^~~~~~
+xcb/XCBCursor.h:22:41: warning: object property ‘cursorPath’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   22 | @property (strong, nonatomic) NSString *cursorPath;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBCursor.h:22:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:24:12: error: unknown property attribute ‘strong’
+   24 | @property (strong, nonatomic) NSMutableDictionary *cursors;
+      |            ^~~~~~
+xcb/XCBCursor.h:24:52: warning: object property ‘cursors’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   24 | @property (strong, nonatomic) NSMutableDictionary *cursors;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+xcb/XCBCursor.h:24:52: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:25:12: error: unknown property attribute ‘strong’
+   25 | @property (strong, nonatomic) NSString *leftPointerName;
+      |            ^~~~~~
+xcb/XCBCursor.h:25:41: warning: object property ‘leftPointerName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   25 | @property (strong, nonatomic) NSString *leftPointerName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+xcb/XCBCursor.h:25:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:26:12: error: unknown property attribute ‘strong’
+   26 | @property (strong, nonatomic) NSString *resizeBottomCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:26:41: warning: object property ‘resizeBottomCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   26 | @property (strong, nonatomic) NSString *resizeBottomCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:26:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:27:12: error: unknown property attribute ‘strong’
+   27 | @property (strong, nonatomic) NSString *resizeRightCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:27:41: warning: object property ‘resizeRightCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   27 | @property (strong, nonatomic) NSString *resizeRightCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:27:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:28:12: error: unknown property attribute ‘strong’
+   28 | @property (strong, nonatomic) NSString *resizeLeftCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:28:41: warning: object property ‘resizeLeftCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   28 | @property (strong, nonatomic) NSString *resizeLeftCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:28:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:29:12: error: unknown property attribute ‘strong’
+   29 | @property (strong, nonatomic) NSString *resizeTopCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:29:41: warning: object property ‘resizeTopCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   29 | @property (strong, nonatomic) NSString *resizeTopCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:29:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:30:12: error: unknown property attribute ‘strong’
+   30 | @property (strong, nonatomic) NSString *resizeBottomRightCornerCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:30:41: warning: object property ‘resizeBottomRightCornerCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   30 | @property (strong, nonatomic) NSString *resizeBottomRightCornerCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:30:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:31:12: error: unknown property attribute ‘strong’
+   31 | @property (strong, nonatomic) NSString *resizeTopLeftCornerCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:31:41: warning: object property ‘resizeTopLeftCornerCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   31 | @property (strong, nonatomic) NSString *resizeTopLeftCornerCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:31:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:32:12: error: unknown property attribute ‘strong’
+   32 | @property (strong, nonatomic) NSString *resizeTopRightCornerCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:32:41: warning: object property ‘resizeTopRightCornerCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   32 | @property (strong, nonatomic) NSString *resizeTopRightCornerCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:32:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBCursor.h:33:12: error: unknown property attribute ‘strong’
+   33 | @property (strong, nonatomic) NSString *resizeBottomLeftCornerCursorName;
+      |            ^~~~~~
+xcb/XCBCursor.h:33:41: warning: object property ‘resizeBottomLeftCornerCursorName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   33 | @property (strong, nonatomic) NSString *resizeBottomLeftCornerCursorName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/XCBCursor.h:33:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from xcb/XCBWindow.h:18:
+xcb/XCBShape.h:20:12: error: unknown property attribute ‘strong’
+   20 | @property (strong, nonatomic) XCBConnection* connection;
+      |            ^~~~~~
+xcb/XCBShape.h:20:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   20 | @property (strong, nonatomic) XCBConnection* connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBShape.h:20:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:62:38: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   62 | @property (nonatomic) XCBConnection* connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBWindow.h:62:38: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:68:12: error: unknown property attribute ‘strong’
+   68 | @property (strong, nonatomic) NSMutableArray* allowedActions;
+      |            ^~~~~~
+xcb/XCBWindow.h:68:47: warning: object property ‘allowedActions’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   68 | @property (strong, nonatomic) NSMutableArray* allowedActions;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+xcb/XCBWindow.h:68:47: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:70:12: error: unknown property attribute ‘strong’
+   70 | @property (strong, nonatomic) NSMutableArray *icons;
+      |            ^~~~~~
+xcb/XCBWindow.h:70:47: warning: object property ‘icons’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   70 | @property (strong, nonatomic) NSMutableArray *icons;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+xcb/XCBWindow.h:70:47: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:71:12: error: unknown property attribute ‘strong’
+   71 | @property (strong, nonatomic) XCBScreen *screen;
+      |            ^~~~~~
+xcb/XCBWindow.h:71:42: warning: object property ‘screen’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   71 | @property (strong, nonatomic) XCBScreen *screen;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+xcb/XCBWindow.h:71:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:72:12: error: unknown property attribute ‘strong’
+   72 | @property (strong, nonatomic) XCBAttributesReply *attributes;
+      |            ^~~~~~
+xcb/XCBWindow.h:72:51: warning: object property ‘attributes’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   72 | @property (strong, nonatomic) XCBAttributesReply *attributes;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBWindow.h:72:51: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:76:12: error: unknown property attribute ‘strong’
+   76 | @property (strong, nonatomic) NSMutableDictionary *cachedWMHints;
+      |            ^~~~~~
+xcb/XCBWindow.h:76:52: warning: object property ‘cachedWMHints’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   76 | @property (strong, nonatomic) NSMutableDictionary *cachedWMHints;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+xcb/XCBWindow.h:76:52: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:78:12: error: unknown property attribute ‘strong’
+   78 | @property (strong, nonatomic) XCBCursor *cursor;
+      |            ^~~~~~
+xcb/XCBWindow.h:78:42: warning: object property ‘cursor’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   78 | @property (strong, nonatomic) XCBCursor *cursor;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+xcb/XCBWindow.h:78:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:79:12: error: unknown property attribute ‘strong’
+   79 | @property (strong, nonatomic) NSMutableArray *windowClass;
+      |            ^~~~~~
+xcb/XCBWindow.h:79:47: warning: object property ‘windowClass’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   79 | @property (strong, nonatomic) NSMutableArray *windowClass;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/XCBWindow.h:79:47: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:80:12: error: unknown property attribute ‘strong’
+   80 | @property (strong, nonatomic) NSString *windowType;
+      |            ^~~~~~
+xcb/XCBWindow.h:80:41: warning: object property ‘windowType’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   80 | @property (strong, nonatomic) NSString *windowType;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBWindow.h:80:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:81:12: error: unknown property attribute ‘strong’
+   81 | @property (strong, nonatomic) XCBWindow *leaderWindow;
+      |            ^~~~~~
+xcb/XCBWindow.h:81:42: warning: object property ‘leaderWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   81 | @property (strong, nonatomic) XCBWindow *leaderWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+xcb/XCBWindow.h:81:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:82:12: error: unknown property attribute ‘strong’
+   82 | @property (strong, nonatomic) XCBShape* shape;
+      |            ^~~~~~
+xcb/XCBWindow.h:82:41: warning: object property ‘shape’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   82 | @property (strong, nonatomic) XCBShape* shape;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+xcb/XCBWindow.h:82:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBWindow.h:122:23: error: unknown property attribute ‘strong’
+  122 | @property (nonatomic, strong) NSTimer *closeTimer;
+      |                       ^~~~~~
+xcb/XCBWindow.h:122:40: warning: object property ‘closeTimer’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  122 | @property (nonatomic, strong) NSTimer *closeTimer;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBWindow.h:122:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/utils/XCBCreateWindowTypeRequest.h:23:12: error: unknown property attribute ‘strong’
+   23 | @property (strong, nonatomic) XCBWindow* parentWindow;
+      |            ^~~~~~
+xcb/utils/XCBCreateWindowTypeRequest.h:23:42: warning: object property ‘parentWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   23 | @property (strong, nonatomic) XCBWindow* parentWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+xcb/utils/XCBCreateWindowTypeRequest.h:23:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/utils/XCBCreateWindowTypeRequest.h:30:23: error: unknown property attribute ‘strong’
+   30 | @property (nonatomic, strong) XCBVisual* visual;
+      |                       ^~~~~~
+xcb/utils/XCBCreateWindowTypeRequest.h:30:42: warning: object property ‘visual’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   30 | @property (nonatomic, strong) XCBVisual* visual;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+xcb/utils/XCBCreateWindowTypeRequest.h:30:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/utils/XCBCreateWindowTypeRequest.h:34:12: error: unknown property attribute ‘strong’
+   34 | @property (strong, nonatomic) XCBWindow *clientWindow;
+      |            ^~~~~~
+xcb/utils/XCBCreateWindowTypeRequest.h:34:42: warning: object property ‘clientWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   34 | @property (strong, nonatomic) XCBWindow *clientWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+xcb/utils/XCBCreateWindowTypeRequest.h:34:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from xcb/XCBConnection.h:13:
+xcb/utils/XCBWindowTypeResponse.h:17:23: error: unknown property attribute ‘strong’
+   17 | @property (nonatomic, strong) XCBWindow *window;
+      |                       ^~~~~~
+xcb/utils/XCBWindowTypeResponse.h:17:42: warning: object property ‘window’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   17 | @property (nonatomic, strong) XCBWindow *window;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+xcb/utils/XCBWindowTypeResponse.h:17:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/utils/XCBWindowTypeResponse.h:18:23: error: unknown property attribute ‘strong’
+   18 | @property (nonatomic, strong) XCBTitleBar *titleBar;
+      |                       ^~~~~~
+xcb/utils/XCBWindowTypeResponse.h:18:44: warning: object property ‘titleBar’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   18 | @property (nonatomic, strong) XCBTitleBar *titleBar;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+xcb/utils/XCBWindowTypeResponse.h:18:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/utils/XCBWindowTypeResponse.h:19:23: error: unknown property attribute ‘strong’
+   19 | @property (nonatomic, strong) XCBFrame *frame;
+      |                       ^~~~~~
+xcb/utils/XCBWindowTypeResponse.h:19:41: warning: object property ‘frame’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   19 | @property (nonatomic, strong) XCBFrame *frame;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+xcb/utils/XCBWindowTypeResponse.h:19:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBConnection.h:61:12: error: unknown property attribute ‘strong’
+   61 | @property (strong, nonatomic) XCBRegion* damagedRegions;
+      |            ^~~~~~
+xcb/XCBConnection.h:61:42: warning: object property ‘damagedRegions’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   61 | @property (strong, nonatomic) XCBRegion* damagedRegions;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+xcb/XCBConnection.h:61:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from xcb/XCBTitleBar.h:11,
+                 from URSHybridEventHandler.h:16:
+xcb/XCBFrame.h:49:12: error: unknown property attribute ‘strong’
+   49 | @property (strong, nonatomic) XCBConnection *connection;
+      |            ^~~~~~
+xcb/XCBFrame.h:49:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   49 | @property (strong, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/XCBFrame.h:49:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from xcb/services/EWMHService.h:12,
+                 from xcb/XCBTitleBar.h:12:
+xcb/services/XCBAtomService.h:20:12: error: unknown property attribute ‘strong’
+   20 | @property (strong, nonatomic) XCBConnection *connection;
+      |            ^~~~~~
+xcb/services/XCBAtomService.h:20:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   20 | @property (strong, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/services/XCBAtomService.h:20:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/XCBAtomService.h:21:44: warning: object property ‘cachedAtoms’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   21 | @property (nonatomic) NSMutableDictionary *cachedAtoms;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/services/XCBAtomService.h:21:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:47:12: error: unknown property attribute ‘strong’
+   47 | @property (strong, nonatomic) NSArray *atoms;
+      |            ^~~~~~
+xcb/services/EWMHService.h:47:40: warning: object property ‘atoms’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   47 | @property (strong, nonatomic) NSArray *atoms;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+xcb/services/EWMHService.h:47:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:48:12: error: unknown property attribute ‘strong’
+   48 | @property (strong, nonatomic) XCBConnection *connection;
+      |            ^~~~~~
+xcb/services/EWMHService.h:48:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   48 | @property (strong, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/services/EWMHService.h:48:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:49:12: error: unknown property attribute ‘strong’
+   49 | @property (strong, nonatomic) XCBAtomService *atomService;
+      |            ^~~~~~
+xcb/services/EWMHService.h:49:47: warning: object property ‘atomService’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   49 | @property (strong, nonatomic) XCBAtomService *atomService;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/services/EWMHService.h:49:47: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:53:12: error: unknown property attribute ‘strong’
+   53 | @property (strong, nonatomic)NSString* EWMHSupported;
+      |            ^~~~~~
+xcb/services/EWMHService.h:53:40: warning: object property ‘EWMHSupported’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   53 | @property (strong, nonatomic)NSString* EWMHSupported;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+xcb/services/EWMHService.h:53:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:54:12: error: unknown property attribute ‘strong’
+   54 | @property (strong, nonatomic)NSString* EWMHClientList;
+      |            ^~~~~~
+xcb/services/EWMHService.h:54:40: warning: object property ‘EWMHClientList’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   54 | @property (strong, nonatomic)NSString* EWMHClientList;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+xcb/services/EWMHService.h:54:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:55:12: error: unknown property attribute ‘strong’
+   55 | @property (strong, nonatomic)NSString* EWMHClientListStacking;
+      |            ^~~~~~
+xcb/services/EWMHService.h:55:40: warning: object property ‘EWMHClientListStacking’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   55 | @property (strong, nonatomic)NSString* EWMHClientListStacking;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:55:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:56:12: error: unknown property attribute ‘strong’
+   56 | @property (strong, nonatomic)NSString* EWMHNumberOfDesktops;
+      |            ^~~~~~
+xcb/services/EWMHService.h:56:40: warning: object property ‘EWMHNumberOfDesktops’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   56 | @property (strong, nonatomic)NSString* EWMHNumberOfDesktops;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:56:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:57:12: error: unknown property attribute ‘strong’
+   57 | @property (strong, nonatomic)NSString* EWMHDesktopGeometry;
+      |            ^~~~~~
+xcb/services/EWMHService.h:57:40: warning: object property ‘EWMHDesktopGeometry’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   57 | @property (strong, nonatomic)NSString* EWMHDesktopGeometry;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:57:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:58:12: error: unknown property attribute ‘strong’
+   58 | @property (strong, nonatomic)NSString* EWMHDesktopViewport;
+      |            ^~~~~~
+xcb/services/EWMHService.h:58:40: warning: object property ‘EWMHDesktopViewport’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   58 | @property (strong, nonatomic)NSString* EWMHDesktopViewport;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:58:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:59:12: error: unknown property attribute ‘strong’
+   59 | @property (strong, nonatomic)NSString* EWMHCurrentDesktop;
+      |            ^~~~~~
+xcb/services/EWMHService.h:59:40: warning: object property ‘EWMHCurrentDesktop’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   59 | @property (strong, nonatomic)NSString* EWMHCurrentDesktop;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:59:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:60:12: error: unknown property attribute ‘strong’
+   60 | @property (strong, nonatomic)NSString* EWMHDesktopNames;
+      |            ^~~~~~
+xcb/services/EWMHService.h:60:40: warning: object property ‘EWMHDesktopNames’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   60 | @property (strong, nonatomic)NSString* EWMHDesktopNames;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:60:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:61:12: error: unknown property attribute ‘strong’
+   61 | @property (strong, nonatomic)NSString* EWMHActiveWindow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:61:40: warning: object property ‘EWMHActiveWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   61 | @property (strong, nonatomic)NSString* EWMHActiveWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:61:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:62:12: error: unknown property attribute ‘strong’
+   62 | @property (strong, nonatomic)NSString* EWMHWorkarea;
+      |            ^~~~~~
+xcb/services/EWMHService.h:62:40: warning: object property ‘EWMHWorkarea’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   62 | @property (strong, nonatomic)NSString* EWMHWorkarea;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+xcb/services/EWMHService.h:62:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:63:12: error: unknown property attribute ‘strong’
+   63 | @property (strong, nonatomic)NSString* EWMHSupportingWMCheck;
+      |            ^~~~~~
+xcb/services/EWMHService.h:63:40: warning: object property ‘EWMHSupportingWMCheck’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   63 | @property (strong, nonatomic)NSString* EWMHSupportingWMCheck;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:63:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:64:12: error: unknown property attribute ‘strong’
+   64 | @property (strong, nonatomic)NSString* EWMHVirtualRoots;
+      |            ^~~~~~
+xcb/services/EWMHService.h:64:40: warning: object property ‘EWMHVirtualRoots’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   64 | @property (strong, nonatomic)NSString* EWMHVirtualRoots;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:64:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:65:12: error: unknown property attribute ‘strong’
+   65 | @property (strong, nonatomic)NSString* EWMHDesktopLayout;
+      |            ^~~~~~
+xcb/services/EWMHService.h:65:40: warning: object property ‘EWMHDesktopLayout’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   65 | @property (strong, nonatomic)NSString* EWMHDesktopLayout;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:65:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:66:12: error: unknown property attribute ‘strong’
+   66 | @property (strong, nonatomic)NSString* EWMHShowingDesktop;
+      |            ^~~~~~
+xcb/services/EWMHService.h:66:40: warning: object property ‘EWMHShowingDesktop’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   66 | @property (strong, nonatomic)NSString* EWMHShowingDesktop;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:66:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:69:12: error: unknown property attribute ‘strong’
+   69 | @property (strong, nonatomic)NSString* EWMHCloseWindow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:69:40: warning: object property ‘EWMHCloseWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   69 | @property (strong, nonatomic)NSString* EWMHCloseWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:69:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:70:12: error: unknown property attribute ‘strong’
+   70 | @property (strong, nonatomic)NSString* EWMHMoveresizeWindow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:70:40: warning: object property ‘EWMHMoveresizeWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   70 | @property (strong, nonatomic)NSString* EWMHMoveresizeWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:70:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:71:12: error: unknown property attribute ‘strong’
+   71 | @property (strong, nonatomic)NSString* EWMHWMMoveresize;
+      |            ^~~~~~
+xcb/services/EWMHService.h:71:40: warning: object property ‘EWMHWMMoveresize’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   71 | @property (strong, nonatomic)NSString* EWMHWMMoveresize;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:71:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:72:12: error: unknown property attribute ‘strong’
+   72 | @property (strong, nonatomic)NSString* EWMHRestackWindow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:72:40: warning: object property ‘EWMHRestackWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   72 | @property (strong, nonatomic)NSString* EWMHRestackWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:72:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:73:12: error: unknown property attribute ‘strong’
+   73 | @property (strong, nonatomic)NSString* EWMHRequestFrameExtents;
+      |            ^~~~~~
+xcb/services/EWMHService.h:73:40: warning: object property ‘EWMHRequestFrameExtents’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   73 | @property (strong, nonatomic)NSString* EWMHRequestFrameExtents;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:73:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:76:12: error: unknown property attribute ‘strong’
+   76 | @property (strong, nonatomic)NSString* EWMHWMName;
+      |            ^~~~~~
+xcb/services/EWMHService.h:76:40: warning: object property ‘EWMHWMName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   76 | @property (strong, nonatomic)NSString* EWMHWMName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/services/EWMHService.h:76:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:77:12: error: unknown property attribute ‘strong’
+   77 | @property (strong, nonatomic)NSString* EWMHWMVisibleName;
+      |            ^~~~~~
+xcb/services/EWMHService.h:77:40: warning: object property ‘EWMHWMVisibleName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   77 | @property (strong, nonatomic)NSString* EWMHWMVisibleName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:77:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:78:12: error: unknown property attribute ‘strong’
+   78 | @property (strong, nonatomic)NSString* EWMHWMIconName;
+      |            ^~~~~~
+xcb/services/EWMHService.h:78:40: warning: object property ‘EWMHWMIconName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   78 | @property (strong, nonatomic)NSString* EWMHWMIconName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+xcb/services/EWMHService.h:78:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:79:12: error: unknown property attribute ‘strong’
+   79 | @property (strong, nonatomic)NSString* EWMHWMVisibleIconName;
+      |            ^~~~~~
+xcb/services/EWMHService.h:79:40: warning: object property ‘EWMHWMVisibleIconName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   79 | @property (strong, nonatomic)NSString* EWMHWMVisibleIconName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:79:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:80:12: error: unknown property attribute ‘strong’
+   80 | @property (strong, nonatomic)NSString* EWMHWMDesktop;
+      |            ^~~~~~
+xcb/services/EWMHService.h:80:40: warning: object property ‘EWMHWMDesktop’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   80 | @property (strong, nonatomic)NSString* EWMHWMDesktop;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+xcb/services/EWMHService.h:80:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:81:12: error: unknown property attribute ‘strong’
+   81 | @property (strong, nonatomic)NSString* EWMHWMWindowType;
+      |            ^~~~~~
+xcb/services/EWMHService.h:81:40: warning: object property ‘EWMHWMWindowType’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   81 | @property (strong, nonatomic)NSString* EWMHWMWindowType;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:81:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:82:12: error: unknown property attribute ‘strong’
+   82 | @property (strong, nonatomic)NSString* EWMHWMState;
+      |            ^~~~~~
+xcb/services/EWMHService.h:82:40: warning: object property ‘EWMHWMState’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   82 | @property (strong, nonatomic)NSString* EWMHWMState;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/services/EWMHService.h:82:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:83:12: error: unknown property attribute ‘strong’
+   83 | @property (strong, nonatomic)NSString* EWMHWMAllowedActions;
+      |            ^~~~~~
+xcb/services/EWMHService.h:83:40: warning: object property ‘EWMHWMAllowedActions’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   83 | @property (strong, nonatomic)NSString* EWMHWMAllowedActions;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:83:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:84:12: error: unknown property attribute ‘strong’
+   84 | @property (strong, nonatomic)NSString* EWMHWMStrut;
+      |            ^~~~~~
+xcb/services/EWMHService.h:84:40: warning: object property ‘EWMHWMStrut’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   84 | @property (strong, nonatomic)NSString* EWMHWMStrut;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/services/EWMHService.h:84:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:85:12: error: unknown property attribute ‘strong’
+   85 | @property (strong, nonatomic)NSString* EWMHWMStrutPartial;
+      |            ^~~~~~
+xcb/services/EWMHService.h:85:40: warning: object property ‘EWMHWMStrutPartial’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   85 | @property (strong, nonatomic)NSString* EWMHWMStrutPartial;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:85:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:86:12: error: unknown property attribute ‘strong’
+   86 | @property (strong, nonatomic)NSString* EWMHWMIconGeometry;
+      |            ^~~~~~
+xcb/services/EWMHService.h:86:40: warning: object property ‘EWMHWMIconGeometry’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   86 | @property (strong, nonatomic)NSString* EWMHWMIconGeometry;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:86:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:87:12: error: unknown property attribute ‘strong’
+   87 | @property (strong, nonatomic)NSString* EWMHWMIcon;
+      |            ^~~~~~
+xcb/services/EWMHService.h:87:40: warning: object property ‘EWMHWMIcon’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   87 | @property (strong, nonatomic)NSString* EWMHWMIcon;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/services/EWMHService.h:87:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:88:12: error: unknown property attribute ‘strong’
+   88 | @property (strong, nonatomic)NSString* EWMHWMPid;
+      |            ^~~~~~
+xcb/services/EWMHService.h:88:40: warning: object property ‘EWMHWMPid’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   88 | @property (strong, nonatomic)NSString* EWMHWMPid;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+xcb/services/EWMHService.h:88:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:89:12: error: unknown property attribute ‘strong’
+   89 | @property (strong, nonatomic)NSString* EWMHWMHandledIcons;
+      |            ^~~~~~
+xcb/services/EWMHService.h:89:40: warning: object property ‘EWMHWMHandledIcons’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   89 | @property (strong, nonatomic)NSString* EWMHWMHandledIcons;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:89:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:90:12: error: unknown property attribute ‘strong’
+   90 | @property (strong, nonatomic)NSString* EWMHWMUserTime;
+      |            ^~~~~~
+xcb/services/EWMHService.h:90:40: warning: object property ‘EWMHWMUserTime’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   90 | @property (strong, nonatomic)NSString* EWMHWMUserTime;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+xcb/services/EWMHService.h:90:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:91:12: error: unknown property attribute ‘strong’
+   91 | @property (strong, nonatomic)NSString* EWMHWMUserTimeWindow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:91:40: warning: object property ‘EWMHWMUserTimeWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   91 | @property (strong, nonatomic)NSString* EWMHWMUserTimeWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:91:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:92:12: error: unknown property attribute ‘strong’
+   92 | @property (strong, nonatomic)NSString* EWMHWMFrameExtents;
+      |            ^~~~~~
+xcb/services/EWMHService.h:92:40: warning: object property ‘EWMHWMFrameExtents’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   92 | @property (strong, nonatomic)NSString* EWMHWMFrameExtents;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:92:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:95:12: error: unknown property attribute ‘strong’
+   95 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDesktop;
+      |            ^~~~~~
+xcb/services/EWMHService.h:95:40: warning: object property ‘EWMHWMWindowTypeDesktop’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   95 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDesktop;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:95:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:96:12: error: unknown property attribute ‘strong’
+   96 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDock;
+      |            ^~~~~~
+xcb/services/EWMHService.h:96:40: warning: object property ‘EWMHWMWindowTypeDock’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   96 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDock;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:96:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:97:12: error: unknown property attribute ‘strong’
+   97 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeToolbar;
+      |            ^~~~~~
+xcb/services/EWMHService.h:97:40: warning: object property ‘EWMHWMWindowTypeToolbar’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   97 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeToolbar;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:97:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:98:12: error: unknown property attribute ‘strong’
+   98 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeMenu;
+      |            ^~~~~~
+xcb/services/EWMHService.h:98:40: warning: object property ‘EWMHWMWindowTypeMenu’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   98 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeMenu;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:98:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:99:12: error: unknown property attribute ‘strong’
+   99 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeUtility;
+      |            ^~~~~~
+xcb/services/EWMHService.h:99:40: warning: object property ‘EWMHWMWindowTypeUtility’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   99 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeUtility;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:99:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:100:12: error: unknown property attribute ‘strong’
+  100 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeSplash;
+      |            ^~~~~~
+xcb/services/EWMHService.h:100:40: warning: object property ‘EWMHWMWindowTypeSplash’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  100 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeSplash;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:100:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:101:12: error: unknown property attribute ‘strong’
+  101 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDialog;
+      |            ^~~~~~
+xcb/services/EWMHService.h:101:40: warning: object property ‘EWMHWMWindowTypeDialog’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  101 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDialog;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:101:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:102:12: error: unknown property attribute ‘strong’
+  102 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDropdownMenu;
+      |            ^~~~~~
+xcb/services/EWMHService.h:102:40: warning: object property ‘EWMHWMWindowTypeDropdownMenu’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  102 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDropdownMenu;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:102:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:103:12: error: unknown property attribute ‘strong’
+  103 | @property (strong, nonatomic)NSString* EWMHWMWindowTypePopupMenu;
+      |            ^~~~~~
+xcb/services/EWMHService.h:103:40: warning: object property ‘EWMHWMWindowTypePopupMenu’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  103 | @property (strong, nonatomic)NSString* EWMHWMWindowTypePopupMenu;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:103:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:105:12: error: unknown property attribute ‘strong’
+  105 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeTooltip;
+      |            ^~~~~~
+xcb/services/EWMHService.h:105:40: warning: object property ‘EWMHWMWindowTypeTooltip’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  105 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeTooltip;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:105:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:106:12: error: unknown property attribute ‘strong’
+  106 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeNotification;
+      |            ^~~~~~
+xcb/services/EWMHService.h:106:40: warning: object property ‘EWMHWMWindowTypeNotification’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  106 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeNotification;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:106:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:107:12: error: unknown property attribute ‘strong’
+  107 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeCombo;
+      |            ^~~~~~
+xcb/services/EWMHService.h:107:40: warning: object property ‘EWMHWMWindowTypeCombo’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  107 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeCombo;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:107:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:108:12: error: unknown property attribute ‘strong’
+  108 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDnd;
+      |            ^~~~~~
+xcb/services/EWMHService.h:108:40: warning: object property ‘EWMHWMWindowTypeDnd’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  108 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeDnd;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:108:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:110:12: error: unknown property attribute ‘strong’
+  110 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeNormal;
+      |            ^~~~~~
+xcb/services/EWMHService.h:110:40: warning: object property ‘EWMHWMWindowTypeNormal’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  110 | @property (strong, nonatomic)NSString* EWMHWMWindowTypeNormal;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:110:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:113:12: error: unknown property attribute ‘strong’
+  113 | @property (strong, nonatomic)NSString* EWMHWMStateModal;
+      |            ^~~~~~
+xcb/services/EWMHService.h:113:40: warning: object property ‘EWMHWMStateModal’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  113 | @property (strong, nonatomic)NSString* EWMHWMStateModal;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:113:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:114:12: error: unknown property attribute ‘strong’
+  114 | @property (strong, nonatomic)NSString* EWMHWMStateSticky;
+      |            ^~~~~~
+xcb/services/EWMHService.h:114:40: warning: object property ‘EWMHWMStateSticky’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  114 | @property (strong, nonatomic)NSString* EWMHWMStateSticky;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:114:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:115:12: error: unknown property attribute ‘strong’
+  115 | @property (strong, nonatomic)NSString* EWMHWMStateMaximizedVert;
+      |            ^~~~~~
+xcb/services/EWMHService.h:115:40: warning: object property ‘EWMHWMStateMaximizedVert’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  115 | @property (strong, nonatomic)NSString* EWMHWMStateMaximizedVert;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:115:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:116:12: error: unknown property attribute ‘strong’
+  116 | @property (strong, nonatomic)NSString* EWMHWMStateMaximizedHorz;
+      |            ^~~~~~
+xcb/services/EWMHService.h:116:40: warning: object property ‘EWMHWMStateMaximizedHorz’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  116 | @property (strong, nonatomic)NSString* EWMHWMStateMaximizedHorz;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:116:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:117:12: error: unknown property attribute ‘strong’
+  117 | @property (strong, nonatomic)NSString* EWMHWMStateShaded;
+      |            ^~~~~~
+xcb/services/EWMHService.h:117:40: warning: object property ‘EWMHWMStateShaded’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  117 | @property (strong, nonatomic)NSString* EWMHWMStateShaded;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:117:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:118:12: error: unknown property attribute ‘strong’
+  118 | @property (strong, nonatomic)NSString* EWMHWMStateSkipTaskbar;
+      |            ^~~~~~
+xcb/services/EWMHService.h:118:40: warning: object property ‘EWMHWMStateSkipTaskbar’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  118 | @property (strong, nonatomic)NSString* EWMHWMStateSkipTaskbar;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:118:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:119:12: error: unknown property attribute ‘strong’
+  119 | @property (strong, nonatomic)NSString* EWMHWMStateSkipPager;
+      |            ^~~~~~
+xcb/services/EWMHService.h:119:40: warning: object property ‘EWMHWMStateSkipPager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  119 | @property (strong, nonatomic)NSString* EWMHWMStateSkipPager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:119:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:120:12: error: unknown property attribute ‘strong’
+  120 | @property (strong, nonatomic)NSString* EWMHWMStateHidden;
+      |            ^~~~~~
+xcb/services/EWMHService.h:120:40: warning: object property ‘EWMHWMStateHidden’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  120 | @property (strong, nonatomic)NSString* EWMHWMStateHidden;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:120:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:121:12: error: unknown property attribute ‘strong’
+  121 | @property (strong, nonatomic)NSString* EWMHWMStateFullscreen;
+      |            ^~~~~~
+xcb/services/EWMHService.h:121:40: warning: object property ‘EWMHWMStateFullscreen’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  121 | @property (strong, nonatomic)NSString* EWMHWMStateFullscreen;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:121:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:122:12: error: unknown property attribute ‘strong’
+  122 | @property (strong, nonatomic)NSString* EWMHWMStateAbove;
+      |            ^~~~~~
+xcb/services/EWMHService.h:122:40: warning: object property ‘EWMHWMStateAbove’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  122 | @property (strong, nonatomic)NSString* EWMHWMStateAbove;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:122:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:123:12: error: unknown property attribute ‘strong’
+  123 | @property (strong, nonatomic)NSString* EWMHWMStateBelow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:123:40: warning: object property ‘EWMHWMStateBelow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  123 | @property (strong, nonatomic)NSString* EWMHWMStateBelow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:123:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:124:12: error: unknown property attribute ‘strong’
+  124 | @property (strong, nonatomic)NSString* EWMHWMStateDemandsAttention;
+      |            ^~~~~~
+xcb/services/EWMHService.h:124:40: warning: object property ‘EWMHWMStateDemandsAttention’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  124 | @property (strong, nonatomic)NSString* EWMHWMStateDemandsAttention;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:124:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:127:12: error: unknown property attribute ‘strong’
+  127 | @property (strong, nonatomic)NSString* EWMHWMActionMove;
+      |            ^~~~~~
+xcb/services/EWMHService.h:127:40: warning: object property ‘EWMHWMActionMove’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  127 | @property (strong, nonatomic)NSString* EWMHWMActionMove;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:127:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:128:12: error: unknown property attribute ‘strong’
+  128 | @property (strong, nonatomic)NSString* EWMHWMActionResize;
+      |            ^~~~~~
+xcb/services/EWMHService.h:128:40: warning: object property ‘EWMHWMActionResize’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  128 | @property (strong, nonatomic)NSString* EWMHWMActionResize;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:128:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:129:12: error: unknown property attribute ‘strong’
+  129 | @property (strong, nonatomic)NSString* EWMHWMActionMinimize;
+      |            ^~~~~~
+xcb/services/EWMHService.h:129:40: warning: object property ‘EWMHWMActionMinimize’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  129 | @property (strong, nonatomic)NSString* EWMHWMActionMinimize;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:129:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:130:12: error: unknown property attribute ‘strong’
+  130 | @property (strong, nonatomic)NSString* EWMHWMActionShade;
+      |            ^~~~~~
+xcb/services/EWMHService.h:130:40: warning: object property ‘EWMHWMActionShade’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  130 | @property (strong, nonatomic)NSString* EWMHWMActionShade;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:130:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:131:12: error: unknown property attribute ‘strong’
+  131 | @property (strong, nonatomic)NSString* EWMHWMActionStick;
+      |            ^~~~~~
+xcb/services/EWMHService.h:131:40: warning: object property ‘EWMHWMActionStick’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  131 | @property (strong, nonatomic)NSString* EWMHWMActionStick;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:131:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:132:12: error: unknown property attribute ‘strong’
+  132 | @property (strong, nonatomic)NSString* EWMHWMActionMaximizeHorz;
+      |            ^~~~~~
+xcb/services/EWMHService.h:132:40: warning: object property ‘EWMHWMActionMaximizeHorz’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  132 | @property (strong, nonatomic)NSString* EWMHWMActionMaximizeHorz;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:132:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:133:12: error: unknown property attribute ‘strong’
+  133 | @property (strong, nonatomic)NSString* EWMHWMActionMaximizeVert;
+      |            ^~~~~~
+xcb/services/EWMHService.h:133:40: warning: object property ‘EWMHWMActionMaximizeVert’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  133 | @property (strong, nonatomic)NSString* EWMHWMActionMaximizeVert;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:133:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:134:12: error: unknown property attribute ‘strong’
+  134 | @property (strong, nonatomic)NSString* EWMHWMActionFullscreen;
+      |            ^~~~~~
+xcb/services/EWMHService.h:134:40: warning: object property ‘EWMHWMActionFullscreen’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  134 | @property (strong, nonatomic)NSString* EWMHWMActionFullscreen;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:134:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:135:12: error: unknown property attribute ‘strong’
+  135 | @property (strong, nonatomic)NSString* EWMHWMActionChangeDesktop;
+      |            ^~~~~~
+xcb/services/EWMHService.h:135:40: warning: object property ‘EWMHWMActionChangeDesktop’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  135 | @property (strong, nonatomic)NSString* EWMHWMActionChangeDesktop;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:135:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:136:12: error: unknown property attribute ‘strong’
+  136 | @property (strong, nonatomic)NSString* EWMHWMActionClose;
+      |            ^~~~~~
+xcb/services/EWMHService.h:136:40: warning: object property ‘EWMHWMActionClose’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  136 | @property (strong, nonatomic)NSString* EWMHWMActionClose;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:136:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:137:12: error: unknown property attribute ‘strong’
+  137 | @property (strong, nonatomic)NSString* EWMHWMActionAbove;
+      |            ^~~~~~
+xcb/services/EWMHService.h:137:40: warning: object property ‘EWMHWMActionAbove’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  137 | @property (strong, nonatomic)NSString* EWMHWMActionAbove;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:137:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:138:12: error: unknown property attribute ‘strong’
+  138 | @property (strong, nonatomic)NSString* EWMHWMActionBelow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:138:40: warning: object property ‘EWMHWMActionBelow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  138 | @property (strong, nonatomic)NSString* EWMHWMActionBelow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:138:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:141:12: error: unknown property attribute ‘strong’
+  141 | @property (strong, nonatomic)NSString* EWMHWMPing;
+      |            ^~~~~~
+xcb/services/EWMHService.h:141:40: warning: object property ‘EWMHWMPing’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  141 | @property (strong, nonatomic)NSString* EWMHWMPing;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+xcb/services/EWMHService.h:141:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:142:12: error: unknown property attribute ‘strong’
+  142 | @property (strong, nonatomic)NSString* EWMHWMSyncRequest;
+      |            ^~~~~~
+xcb/services/EWMHService.h:142:40: warning: object property ‘EWMHWMSyncRequest’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  142 | @property (strong, nonatomic)NSString* EWMHWMSyncRequest;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:142:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:143:12: error: unknown property attribute ‘strong’
+  143 | @property (strong, nonatomic)NSString* EWMHWMFullscreenMonitors;
+      |            ^~~~~~
+xcb/services/EWMHService.h:143:40: warning: object property ‘EWMHWMFullscreenMonitors’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  143 | @property (strong, nonatomic)NSString* EWMHWMFullscreenMonitors;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:143:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:146:12: error: unknown property attribute ‘strong’
+  146 | @property (strong, nonatomic)NSString* EWMHWMFullPlacement;
+      |            ^~~~~~
+xcb/services/EWMHService.h:146:40: warning: object property ‘EWMHWMFullPlacement’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  146 | @property (strong, nonatomic)NSString* EWMHWMFullPlacement;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:146:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:147:12: error: unknown property attribute ‘strong’
+  147 | @property (strong, nonatomic)NSString* UTF8_STRING;
+      |            ^~~~~~
+xcb/services/EWMHService.h:147:40: warning: object property ‘UTF8_STRING’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  147 | @property (strong, nonatomic)NSString* UTF8_STRING;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/services/EWMHService.h:147:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:148:12: error: unknown property attribute ‘strong’
+  148 | @property (strong, nonatomic)NSString* MANAGER;
+      |            ^~~~~~
+xcb/services/EWMHService.h:148:40: warning: object property ‘MANAGER’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  148 | @property (strong, nonatomic)NSString* MANAGER;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+xcb/services/EWMHService.h:148:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:149:12: error: unknown property attribute ‘strong’
+  149 | @property (strong, nonatomic)NSString* KdeNetWFrameStrut;
+      |            ^~~~~~
+xcb/services/EWMHService.h:149:40: warning: object property ‘KdeNetWFrameStrut’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  149 | @property (strong, nonatomic)NSString* KdeNetWFrameStrut;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:149:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:150:12: error: unknown property attribute ‘strong’
+  150 | @property (strong, nonatomic)NSString* MotifWMHints;
+      |            ^~~~~~
+xcb/services/EWMHService.h:150:40: warning: object property ‘MotifWMHints’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  150 | @property (strong, nonatomic)NSString* MotifWMHints;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+xcb/services/EWMHService.h:150:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:153:12: error: unknown property attribute ‘strong’
+  153 | @property (strong, nonatomic)NSString *GNUStepMiniaturizeWindow;
+      |            ^~~~~~
+xcb/services/EWMHService.h:153:40: warning: object property ‘GNUStepMiniaturizeWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  153 | @property (strong, nonatomic)NSString *GNUStepMiniaturizeWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:153:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:154:12: error: unknown property attribute ‘strong’
+  154 | @property (strong, nonatomic)NSString *GNUStepHideApp;
+      |            ^~~~~~
+xcb/services/EWMHService.h:154:40: warning: object property ‘GNUStepHideApp’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  154 | @property (strong, nonatomic)NSString *GNUStepHideApp;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+xcb/services/EWMHService.h:154:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:155:12: error: unknown property attribute ‘strong’
+  155 | @property (strong, nonatomic)NSString *GNUStepWmAttr;
+      |            ^~~~~~
+xcb/services/EWMHService.h:155:40: warning: object property ‘GNUStepWmAttr’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  155 | @property (strong, nonatomic)NSString *GNUStepWmAttr;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+xcb/services/EWMHService.h:155:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:156:12: error: unknown property attribute ‘strong’
+  156 | @property (strong, nonatomic)NSString *GNUStepTitleBarState;
+      |            ^~~~~~
+xcb/services/EWMHService.h:156:40: warning: object property ‘GNUStepTitleBarState’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  156 | @property (strong, nonatomic)NSString *GNUStepTitleBarState;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:156:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:157:12: error: unknown property attribute ‘strong’
+  157 | @property (strong, nonatomic)NSString *GNUStepFrameOffset;
+      |            ^~~~~~
+xcb/services/EWMHService.h:157:40: warning: object property ‘GNUStepFrameOffset’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  157 | @property (strong, nonatomic)NSString *GNUStepFrameOffset;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:157:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:161:12: error: unknown property attribute ‘strong’
+  161 | @property (strong, nonatomic)NSString *EWMHStartupId;
+      |            ^~~~~~
+xcb/services/EWMHService.h:161:40: warning: object property ‘EWMHStartupId’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  161 | @property (strong, nonatomic)NSString *EWMHStartupId;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+xcb/services/EWMHService.h:161:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:162:12: error: unknown property attribute ‘strong’
+  162 | @property (strong, nonatomic)NSString *EWMHFrameExtents;
+      |            ^~~~~~
+xcb/services/EWMHService.h:162:40: warning: object property ‘EWMHFrameExtents’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  162 | @property (strong, nonatomic)NSString *EWMHFrameExtents;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:162:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:163:12: error: unknown property attribute ‘strong’
+  163 | @property (strong, nonatomic)NSString *EWMHStrutPartial;
+      |            ^~~~~~
+xcb/services/EWMHService.h:163:40: warning: object property ‘EWMHStrutPartial’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  163 | @property (strong, nonatomic)NSString *EWMHStrutPartial;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:163:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:164:12: error: unknown property attribute ‘strong’
+  164 | @property (strong, nonatomic)NSString *EWMHVisibleIconName;
+      |            ^~~~~~
+xcb/services/EWMHService.h:164:40: warning: object property ‘EWMHVisibleIconName’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  164 | @property (strong, nonatomic)NSString *EWMHVisibleIconName;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:164:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:167:12: error: unknown property attribute ‘strong’
+  167 | @property (strong, nonatomic)NSString *WindowId;
+      |            ^~~~~~
+xcb/services/EWMHService.h:167:40: warning: object property ‘WindowId’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  167 | @property (strong, nonatomic)NSString *WindowId;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+xcb/services/EWMHService.h:167:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:170:12: error: unknown property attribute ‘strong’
+  170 | @property (strong, nonatomic)NSString *GWSpatialPath;
+      |            ^~~~~~
+xcb/services/EWMHService.h:170:40: warning: object property ‘GWSpatialPath’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  170 | @property (strong, nonatomic)NSString *GWSpatialPath;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+xcb/services/EWMHService.h:170:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/services/EWMHService.h:171:12: error: unknown property attribute ‘strong’
+  171 | @property (strong, nonatomic)NSString *GWSpatialNavigate;
+      |            ^~~~~~
+xcb/services/EWMHService.h:171:40: warning: object property ‘GWSpatialNavigate’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+  171 | @property (strong, nonatomic)NSString *GWSpatialNavigate;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+xcb/services/EWMHService.h:171:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+xcb/XCBTitleBar.h:31:12: error: unknown property attribute ‘strong’
+   31 | @property (strong, nonatomic) EWMHService *ewmhService;
+      |            ^~~~~~
+xcb/XCBTitleBar.h:31:44: warning: object property ‘ewmhService’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   31 | @property (strong, nonatomic) EWMHService *ewmhService;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+xcb/XCBTitleBar.h:31:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from URSHybridEventHandler.h:18:
+URSWindowSwitcher.h:19:12: error: unknown property attribute ‘strong’
+   19 | @property (strong, nonatomic) XCBFrame *frame;
+      |            ^~~~~~
+URSWindowSwitcher.h:19:41: warning: object property ‘frame’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   19 | @property (strong, nonatomic) XCBFrame *frame;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+URSWindowSwitcher.h:19:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSWindowSwitcher.h:22:12: error: unknown property attribute ‘strong’
+   22 | @property (strong, nonatomic) NSString *title;
+      |            ^~~~~~
+URSWindowSwitcher.h:22:41: warning: object property ‘title’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   22 | @property (strong, nonatomic) NSString *title;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+URSWindowSwitcher.h:22:41: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSWindowSwitcher.h:23:12: error: unknown property attribute ‘strong’
+   23 | @property (strong, nonatomic) NSImage *icon;
+      |            ^~~~~~
+URSWindowSwitcher.h:23:40: warning: object property ‘icon’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   23 | @property (strong, nonatomic) NSImage *icon;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+URSWindowSwitcher.h:23:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSWindowSwitcher.h:28:12: error: unknown property attribute ‘strong’
+   28 | @property (strong, nonatomic) XCBConnection *connection;
+      |            ^~~~~~
+URSWindowSwitcher.h:28:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   28 | @property (strong, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSWindowSwitcher.h:28:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSWindowSwitcher.h:29:12: error: unknown property attribute ‘strong’
+   29 | @property (strong, nonatomic) NSMutableArray *windowEntries;   // Array of URSWindowEntry
+      |            ^~~~~~
+URSWindowSwitcher.h:29:47: warning: object property ‘windowEntries’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   29 | @property (strong, nonatomic) NSMutableArray *windowEntries;   // Array of URSWindowEntry
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+URSWindowSwitcher.h:29:47: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSWindowSwitcher.h:32:12: error: unknown property attribute ‘strong’
+   32 | @property (strong, nonatomic) URSWindowSwitcherOverlay *overlay;  // Visual overlay
+      |            ^~~~~~
+URSWindowSwitcher.h:32:57: warning: object property ‘overlay’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   32 | @property (strong, nonatomic) URSWindowSwitcherOverlay *overlay;  // Visual overlay
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+URSWindowSwitcher.h:32:57: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from URSHybridEventHandler.h:20:
+URSCompositingManager.h:57:54: error: unknown type name ‘dispatch_block_t’
+   57 |                                          completion:(dispatch_block_t)completion;
+      |                                                      ^~~~~~~~~~~~~~~~
+In file included from URSHybridEventHandler.h:21:
+URSFocusManager.h:17:12: error: unknown property attribute ‘weak’
+   17 | @property (weak, nonatomic) XCBConnection *connection;
+      |            ^~~~
+URSFocusManager.h:17:44: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   17 | @property (weak, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSFocusManager.h:17:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSFocusManager.h:18:12: error: unknown property attribute ‘weak’
+   18 | @property (weak, nonatomic) XCBWindow *selectionManagerWindow;
+      |            ^~~~
+URSFocusManager.h:18:40: warning: object property ‘selectionManagerWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   18 | @property (weak, nonatomic) XCBWindow *selectionManagerWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+URSFocusManager.h:18:40: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from URSHybridEventHandler.h:22:
+URSKeyboardManager.h:17:12: error: unknown property attribute ‘weak’
+   17 | @property (weak, nonatomic) XCBConnection *connection;
+      |            ^~~~
+URSKeyboardManager.h:17:44: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   17 | @property (weak, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSKeyboardManager.h:17:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSKeyboardManager.h:18:12: error: unknown property attribute ‘weak’
+   18 | @property (weak, nonatomic) URSWindowSwitcher *windowSwitcher;
+      |            ^~~~
+URSKeyboardManager.h:18:48: warning: object property ‘windowSwitcher’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   18 | @property (weak, nonatomic) URSWindowSwitcher *windowSwitcher;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+URSKeyboardManager.h:18:48: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSKeyboardManager.h:19:12: error: unknown property attribute ‘weak’
+   19 | @property (weak, nonatomic) URSFocusManager *focusManager;
+      |            ^~~~
+URSKeyboardManager.h:19:46: warning: object property ‘focusManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   19 | @property (weak, nonatomic) URSFocusManager *focusManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+URSKeyboardManager.h:19:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from URSHybridEventHandler.h:23:
+URSWorkareaManager.h:14:12: error: unknown property attribute ‘weak’
+   14 | @property (weak, nonatomic) XCBConnection *connection;
+      |            ^~~~
+URSWorkareaManager.h:14:44: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   14 | @property (weak, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSWorkareaManager.h:14:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from URSHybridEventHandler.h:24:
+URSTitlebarController.h:20:12: error: unknown property attribute ‘weak’
+   20 | @property (weak, nonatomic) XCBConnection *connection;
+      |            ^~~~
+URSTitlebarController.h:20:44: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   20 | @property (weak, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSTitlebarController.h:20:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSTitlebarController.h:21:12: error: unknown property attribute ‘weak’
+   21 | @property (weak, nonatomic) URSCompositingManager *compositingManager;
+      |            ^~~~
+URSTitlebarController.h:21:52: warning: object property ‘compositingManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   21 | @property (weak, nonatomic) URSCompositingManager *compositingManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+URSTitlebarController.h:21:52: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSTitlebarController.h:22:12: error: unknown property attribute ‘weak’
+   22 | @property (weak, nonatomic) URSFocusManager *focusManager;
+      |            ^~~~
+URSTitlebarController.h:22:46: warning: object property ‘focusManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   22 | @property (weak, nonatomic) URSFocusManager *focusManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+URSTitlebarController.h:22:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSTitlebarController.h:23:12: error: unknown property attribute ‘weak’
+   23 | @property (weak, nonatomic) URSWorkareaManager *workareaManager;
+      |            ^~~~
+URSTitlebarController.h:23:49: warning: object property ‘workareaManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   23 | @property (weak, nonatomic) URSWorkareaManager *workareaManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+URSTitlebarController.h:23:49: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+In file included from URSHybridEventHandler.h:25:
+URSSnappingMenuController.h:16:12: error: unknown property attribute ‘weak’
+   16 | @property (weak, nonatomic) XCBConnection *connection;
+      |            ^~~~
+URSSnappingMenuController.h:16:44: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   16 | @property (weak, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSSnappingMenuController.h:16:44: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSSnappingMenuController.h:17:12: error: unknown property attribute ‘strong’
+   17 | @property (strong, nonatomic) NSMenu *activeMenu;
+      |            ^~~~~~
+URSSnappingMenuController.h:17:39: warning: object property ‘activeMenu’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   17 | @property (strong, nonatomic) NSMenu *activeMenu;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSSnappingMenuController.h:17:39: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:30:12: error: unknown property attribute ‘strong’
+   30 | @property (strong, nonatomic) XCBConnection *connection;
+      |            ^~~~~~
+URSHybridEventHandler.h:30:46: warning: object property ‘connection’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   30 | @property (strong, nonatomic) XCBConnection *connection;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+URSHybridEventHandler.h:30:46: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:31:12: error: unknown property attribute ‘strong’
+   31 | @property (strong, nonatomic) XCBWindow *selectionManagerWindow;
+      |            ^~~~~~
+URSHybridEventHandler.h:31:42: warning: object property ‘selectionManagerWindow’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   31 | @property (strong, nonatomic) XCBWindow *selectionManagerWindow;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+URSHybridEventHandler.h:31:42: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:42:12: error: unknown property attribute ‘strong’
+   42 | @property (strong, nonatomic) URSWindowSwitcher *windowSwitcher;
+      |            ^~~~~~
+URSHybridEventHandler.h:42:50: warning: object property ‘windowSwitcher’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   42 | @property (strong, nonatomic) URSWindowSwitcher *windowSwitcher;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+URSHybridEventHandler.h:42:50: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:45:12: error: unknown property attribute ‘strong’
+   45 | @property (strong, nonatomic) URSCompositingManager *compositingManager;
+      |            ^~~~~~
+URSHybridEventHandler.h:45:54: warning: object property ‘compositingManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   45 | @property (strong, nonatomic) URSCompositingManager *compositingManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+URSHybridEventHandler.h:45:54: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:49:12: error: unknown property attribute ‘strong’
+   49 | @property (strong, nonatomic) URSFocusManager *focusManager;
+      |            ^~~~~~
+URSHybridEventHandler.h:49:48: warning: object property ‘focusManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   49 | @property (strong, nonatomic) URSFocusManager *focusManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+URSHybridEventHandler.h:49:48: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:50:12: error: unknown property attribute ‘strong’
+   50 | @property (strong, nonatomic) URSKeyboardManager *keyboardManager;
+      |            ^~~~~~
+URSHybridEventHandler.h:50:51: warning: object property ‘keyboardManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   50 | @property (strong, nonatomic) URSKeyboardManager *keyboardManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+URSHybridEventHandler.h:50:51: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:51:12: error: unknown property attribute ‘strong’
+   51 | @property (strong, nonatomic) URSWorkareaManager *workareaManager;
+      |            ^~~~~~
+URSHybridEventHandler.h:51:51: warning: object property ‘workareaManager’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   51 | @property (strong, nonatomic) URSWorkareaManager *workareaManager;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+URSHybridEventHandler.h:51:51: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:52:12: error: unknown property attribute ‘strong’
+   52 | @property (strong, nonatomic) URSTitlebarController *titlebarController;
+      |            ^~~~~~
+URSHybridEventHandler.h:52:54: warning: object property ‘titlebarController’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   52 | @property (strong, nonatomic) URSTitlebarController *titlebarController;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+URSHybridEventHandler.h:52:54: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+URSHybridEventHandler.h:53:12: error: unknown property attribute ‘strong’
+   53 | @property (strong, nonatomic) URSSnappingMenuController *snappingMenuController;
+      |            ^~~~~~
+URSHybridEventHandler.h:53:58: warning: object property ‘snappingMenuController’ has no ‘assign’, ‘retain’ or ‘copy’ attribute; assuming ‘assign’
+   53 | @property (strong, nonatomic) URSSnappingMenuController *snappingMenuController;
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+URSHybridEventHandler.h:53:58: note: ‘assign’ can be unsafe for Objective-C objects; please state explicitly if you need it
+main.m: In function ‘signalHandler’:
+main.m:23:17: warning: variable ‘signame’ set but not used [-Wunused-but-set-variable]
+   23 |     const char *signame;
+      |                 ^~~~~~~
+main.m: In function ‘main’:
+main.m:68:5: error: stray ‘@’ in program
+   68 |     @autoreleasepool {
+      |     ^
+main.m:68:6: error: ‘autoreleasepool’ undeclared (first use in this function); did you mean ‘NSAutoreleasePool’?
+   68 |     @autoreleasepool {
+      |      ^~~~~~~~~~~~~~~
+      |      NSAutoreleasePool
+main.m:68:6: note: each undeclared identifier is reported only once for each function it appears in
+main.m:68:21: error: expected ‘;’ before ‘{’ token
+   68 |     @autoreleasepool {
+      |                     ^~
+      |                     ;
+main.m: At top level:
+main.m:42:13: warning: ‘setupSignalHandlers’ defined but not used [-Wunused-function]
+   42 | static void setupSignalHandlers(void)
+      |             ^~~~~~~~~~~~~~~~~~~
+gmake[4]: *** [/System/Library/Makefiles/rules.make:534: obj/WindowManager.obj/main.m.o] Error 1
+gmake[3]: *** [/System/Library/Makefiles/Instance/application.make:145: internal-app-run-compile-submake] Error 2
+gmake[2]: *** [/System/Library/Makefiles/Master/rules.make:297: WindowManager.all.app.variables] Error 2
+make[1]: *** [/System/Library/Makefiles/Master/application.make:38: internal-all] Error 2
+make[1] : on quitte le répertoire « /home/patrick/SOURCES/agnostep-desktop/build/gnustep-windowmanager/WindowManager »
+make: *** [GNUmakefile:6: all] Error 2
