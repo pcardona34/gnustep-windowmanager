@@ -103,6 +103,10 @@ $(APP_NAME)_GUI_LIBS = \
 		-lxcb-composite -lxcb-render -lxcb-damage -lxcb-shm -lxcb-present \
 		-ldispatch
 
+CPPFLAGS += -I/usr/local/include
+LDFLAGS  += -L/usr/local/lib
+LDLIBS   += -ldispatch
+
 ADDITIONAL_OBJCFLAGS = -std=c99 -g -O0 -fobjc-arc -fblocks -Wall -Wno-typedef-redefinition
 
 # Profiling: build with  make PROFILE=1  to enable CPU instrumentation.
