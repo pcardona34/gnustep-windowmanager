@@ -1,4 +1,4 @@
-PACKAGE_NAME = uroswm
+PACKAGE_NAME = WindowManager
 
 include $(GNUSTEP_MAKEFILES)/common.make
 WindowManager_INSTALL_DIR = /System/Library/CoreServices/Applications
