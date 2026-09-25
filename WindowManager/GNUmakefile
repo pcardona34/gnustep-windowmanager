@@ -103,9 +103,15 @@ $(APP_NAME)_GUI_LIBS = \
 		-lxcb-composite -lxcb-render -lxcb-damage -lxcb-shm -lxcb-present \
 		-ldispatch
 
-CPPFLAGS += -I/usr/local/include
-LDFLAGS  += -L/usr/local/lib
-LDLIBS   += -ldispatch
+### To avoid a -ldispatch path issue with clang on Debian
+ifeq ($(shell uname -s),Linux)
+ifeq ($(shell lsb_release -is),Debian)
+    # Commands for Debian GNU/Linux
+	CPPFLAGS += -I/usr/local/include
+	LDFLAGS  += -L/usr/local/lib
+	LDLIBS   += -ldispatch
+endif
+endif
 
 ADDITIONAL_OBJCFLAGS = -std=c99 -g -O0 -fobjc-arc -fblocks -Wall -Wno-typedef-redefinition
 
